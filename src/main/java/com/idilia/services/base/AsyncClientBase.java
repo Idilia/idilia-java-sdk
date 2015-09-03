@@ -30,6 +30,8 @@ public class AsyncClientBase extends ClientBase implements Closeable {
    * <p>
    * This method can be overriden to provide a client with different options.
    * The client built gets an extra interceptor to add the credentials headers.
+   *
+   * @return HTTP default async client builder
    */
   protected static HttpAsyncClientBuilder defaultClientBuilder() {
     return HttpAsyncClients

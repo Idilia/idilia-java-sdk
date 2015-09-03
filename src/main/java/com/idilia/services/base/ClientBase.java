@@ -44,7 +44,11 @@ public class ClientBase {
     this.serviceUrl = serviceUrl;
   }
 
-  /** Helper function to create the POST request for a single part request */
+  /** Helper function to create the POST request for a single part request
+   *
+   * @param req base request to be POSTed
+   * @return initialized HttpPost request
+   */
   protected HttpPost createPost(RequestBase req) {
     String path = serviceUrl.toString();
     String resource = req.requestPath();
@@ -54,7 +58,11 @@ public class ClientBase {
     return httppost;
   }
   
-  /** Helper function to create the POST request for a multipart request */
+  /** Helper function to create the POST request for a multipart request
+   *
+   * @param req base request to be POSTed
+   * @return initialized HttpPost request
+   */
   protected HttpPost createMultipartPost(RequestBase req) throws IdiliaClientException {
     // Create the post request
     String path = this.serviceUrl.toString();
@@ -79,7 +87,12 @@ public class ClientBase {
     return httpPost;
   }
 
-  /** Helper to add the information required to compute the signature into the context */
+  /** Helper to add the information required to compute the signature into the context
+   * @param ctxt HttpContext to be updated
+   * @param resource string
+   * @param toMD5 byte array for which a digest will be computed
+   */
+
   protected void sign(HttpContext ctxt, String resource, byte[] toMD5) {
 
     String signTail = "-" + serviceUrl.getHost() + "-" + resource;
