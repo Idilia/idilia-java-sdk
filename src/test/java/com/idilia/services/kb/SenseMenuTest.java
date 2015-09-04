@@ -17,23 +17,21 @@ public class SenseMenuTest extends TestBase {
     return Configuration.INSTANCE.getKbApiUrl();
   }
   
-  //
-  // Tests for obtaining a sense menu
-  //
-  
   @Test
   public void testSenseMenuFromText() throws Exception {
     SenseMenuRequest menuReq = new SenseMenuRequest();
     menuReq.setText("dog");
     menuReq.setRequestId("textTest");
-    Client client = new Client(getDefaultCreds(), getSvcUrl());
+    menuReq.setTemplate(menuTmplt);
+    try (Client client = new Client(getDefaultCreds(), getSvcUrl())) {
     
-    SenseMenuResponse menuResp = client.senseMenu(menuReq);
-    Assert.assertEquals(HttpURLConnection.HTTP_OK, menuResp.getStatus());
-    Assert.assertTrue(menuResp.getErrorMsg() == null);
-    Assert.assertEquals("textTest", menuResp.getRequestId());
-    Assert.assertNotNull(menuResp.menu);
-    client.close();
+      SenseMenuResponse menuResp = client.senseMenu(menuReq);
+      Assert.assertEquals(HttpURLConnection.HTTP_OK, menuResp.getStatus());
+      Assert.assertTrue(menuResp.getErrorMsg() == null);
+      Assert.assertEquals("textTest", menuResp.getRequestId());
+      Assert.assertNotNull(menuResp.menu);
+    } finally {
+    }
   }
   
   @Test
@@ -56,15 +54,18 @@ public class SenseMenuTest extends TestBase {
     TaggingMenuRequest menuReq = new TaggingMenuRequest();
     menuReq.setTf(response.getResult());
     menuReq.setRequestId("tfTest");
-    Client client = new Client(getDefaultCreds(), getSvcUrl());
-    
-    TaggingMenuResponse menuResp = client.taggingMenu(menuReq);
-    Assert.assertEquals(HttpURLConnection.HTTP_OK, menuResp.getStatus());
-    Assert.assertTrue(menuResp.getErrorMsg() == null);
-    Assert.assertEquals("tfTest", menuResp.getRequestId());
-    Assert.assertNotNull(menuResp.menu);
-    Assert.assertNotNull(menuResp.text);
-    client.close();
+    menuReq.setTemplate(menuTmplt);
+    try (Client client = new Client(getDefaultCreds(), getSvcUrl())) {
+      
+      TaggingMenuResponse menuResp = client.taggingMenu(menuReq);
+      Assert.assertEquals(HttpURLConnection.HTTP_OK, menuResp.getStatus());
+      Assert.assertTrue(menuResp.getErrorMsg() == null);
+      Assert.assertEquals("tfTest", menuResp.getRequestId());
+      Assert.assertNotNull(menuResp.menu);
+      Assert.assertNotNull(menuResp.text);
+    } finally {
+    }
   }
 
+  static final String menuTmplt = "image_v2";
 }

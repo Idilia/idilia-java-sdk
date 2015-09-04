@@ -75,9 +75,9 @@ public class TaggingMenuRequest extends MenuRequest {
   }
   
   @Override
-  protected void getHttpQueryParms(List<NameValuePair> parms) throws IllegalStateException {
+  protected void getHttpQueryParms(List<NameValuePair> parms) throws IdiliaClientException {
     if (tf == null)
-      throw new IllegalStateException("TextFeatures attachment not provided.");
+      throw new IdiliaClientException("TextFeatures attachment not provided.");
     if (tfStart != -1)
       parms.add(new BasicNameValuePair("tfStart", String.valueOf(tfStart)));
     if (tfEnd != -1)

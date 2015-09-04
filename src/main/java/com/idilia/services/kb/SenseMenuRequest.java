@@ -6,6 +6,8 @@ import java.util.List;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
+import com.idilia.services.base.IdiliaClientException;
+
 public class SenseMenuRequest extends MenuRequest {
   
   public final String getText() {
@@ -51,9 +53,9 @@ public class SenseMenuRequest extends MenuRequest {
   }
   
   @Override
-  protected void getHttpQueryParms(List<NameValuePair> parms) throws IllegalStateException {
+  protected void getHttpQueryParms(List<NameValuePair> parms) throws IdiliaClientException {
     if (text == null || text.isEmpty())
-      throw new IllegalStateException("No text provided.");
+      throw new IdiliaClientException("No text provided.");
     parms.add(new BasicNameValuePair("text", text));
     if (selectedFsk != null)
       parms.add(new BasicNameValuePair("selectedFsk", selectedFsk));

@@ -7,7 +7,6 @@
 
 package com.idilia.services.base;
 
-import java.security.InvalidKeyException;
 import java.util.Objects;
 
 final public class IdiliaCredentials {
@@ -18,23 +17,23 @@ final public class IdiliaCredentials {
    *          : Valid access key
    * @param sk
    *          : Matching private key for encoding
-   * @throws InvalidKeyException
+   * @throws IdiliaClientException if the key values are not respecting the expected format
    */
-  public IdiliaCredentials(String ak, String sk) throws InvalidKeyException {
+  public IdiliaCredentials(String ak, String sk) throws IdiliaClientException {
+    if (ak.length() != 13 || sk.length() != 30 || !ak.startsWith("Idi"))
+      throw new IdiliaClientException("Invalid credentials");
+    
     accessKey = ak;
     secretKey = sk;
-
-    if (accessKey.length() != 13 || secretKey.length() != 30 || !accessKey.startsWith("Idi"))
-      throw new InvalidKeyException();
   }
 
   /**
    * 
    * @param k
    *          : Combination of access key and private key
-   * @throws InvalidKeyException
+   * @throws IdiliaClientException if the key value does not respect the expected format
    */
-  public IdiliaCredentials(String k) throws InvalidKeyException {
+  public IdiliaCredentials(String k) throws IdiliaClientException {
     this(k.substring(0, 13), k.substring(13));
   }
 

@@ -11,7 +11,7 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.idilia.services.base.IdiliaClientException;
 
-public class KbQueryCodec<T> {
+public class QueryCodec<T> {
 
   static <T> QueryResponse decode(
       ObjectMapper jsonMapper, Class<T> tpRef,

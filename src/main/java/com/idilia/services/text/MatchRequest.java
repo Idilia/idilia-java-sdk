@@ -12,7 +12,6 @@
 package com.idilia.services.text;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,10 +21,9 @@ import org.apache.http.message.BasicNameValuePair;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.idilia.services.base.IdiliaClientException;
 import com.idilia.services.base.RequestBase;
 
 /**
@@ -179,9 +177,12 @@ public class MatchRequest extends RequestBase {
       filters = filterSpec;
   }
   
-  public final void setFilter(ArrayList<Filter> pfilters) throws JsonProcessingException {
-    ObjectMapper mapper = new ObjectMapper();
-    filters = mapper.writeValueAsString(pfilters);
+  public final void setFilter(ArrayList<Filter> pfilters) throws IdiliaClientException {
+    try {
+      filters = jsonMapper.writeValueAsString(pfilters);
+    } catch (JsonProcessingException e) {
+      throw new IdiliaClientException(e);
+    }
   }
 
   /**
@@ -277,4 +278,5 @@ public class MatchRequest extends RequestBase {
   private String notificationURI;
   private Integer timeout = 0;
   private Integer maxCount;
+  private static final ObjectMapper jsonMapper = new ObjectMapper();
 }

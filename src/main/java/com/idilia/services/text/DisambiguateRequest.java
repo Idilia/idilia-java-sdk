@@ -13,7 +13,6 @@ package com.idilia.services.text;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +28,7 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.message.BasicNameValuePair;
 
+import com.idilia.services.base.IdiliaClientException;
 import com.idilia.services.base.RequestBase;
 
 /**
@@ -223,10 +223,10 @@ public class DisambiguateRequest extends RequestBase {
   
   
   @Override
-  protected void getHttpQueryParms(List<NameValuePair> parms) throws IllegalStateException {
+  protected void getHttpQueryParms(List<NameValuePair> parms) throws IdiliaClientException {
     
     if (this.attachments.isEmpty())
-      throw new IllegalStateException("No text specified");
+      throw new IdiliaClientException("No text specified");
     
     // Add base parameters
     super.getHttpQueryParms(parms);

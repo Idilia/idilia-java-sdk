@@ -49,7 +49,7 @@ class ParaphraseCodec {
       BodyPart body = mmp.getBodyPart(0);
       String bodyCt = body.getContentType();
       if (!bodyCt.startsWith("application/json"))
-        throw new IOException("Unexpected mime type from server: " + body.getContentType());
+        throw new IdiliaClientException("Unexpected mime type from server: " + body.getContentType());
       
       // Parse using the stream api
       JsonParser jp = jsonMapper.getFactory().createParser(body.getInputStream());

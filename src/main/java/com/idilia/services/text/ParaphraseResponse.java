@@ -5,7 +5,8 @@
 package com.idilia.services.text;
 
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
@@ -113,7 +114,7 @@ public class ParaphraseResponse extends ResponseBase {
    *
    * @return paraphrases
    */
-  public final Vector<Paraphrase> getParaphrases() {
+  public final List<Paraphrase> getParaphrases() {
     return paraphrases;
   }
   
@@ -210,6 +211,6 @@ public class ParaphraseResponse extends ResponseBase {
   
   
   private DisambiguatedDocument wsdResult;
-  private Vector<Paraphrase> paraphrases = new Vector<Paraphrase>();
+  private ArrayList<Paraphrase> paraphrases = new ArrayList<Paraphrase>();
   private QueryConfidence queryConfidence;
 }

@@ -1,16 +1,12 @@
 package com.idilia.services.kb;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Random;
 
-import org.apache.log4j.Level;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.idilia.services.base.Configuration;
 import com.idilia.services.base.TestBase;
 import com.idilia.services.kb.objects.NeInfo;
@@ -34,46 +30,40 @@ public class ClientTest extends TestBase {
       LinkedHashMap<String,Object> mtlRes = (LinkedHashMap<String,Object>) response.getResult().get(0);
       Assert.assertTrue(mtlRes.get("fs") != null);
       Assert.assertTrue(mtlRes.get("definition") != null);
-      
-    } catch (IOException e) {
-      logger_.log(Level.INFO,
-          "Got exception when trying to contact kb server " + e.getMessage());
-    } catch (Exception e) {
-      logger_.log(Level.INFO,
-          "Got unexpected exception when running kb test: " + e.getMessage());
+    } finally {
     }
   }
-  
   
   @Test
-  public void testObjectMapping() throws Exception {
+  public void testObjectMapping() {
     
-    Client client = new Client(getDefaultCreds(), getSvcUrl());
+    try (Client client = new Client(getDefaultCreds(), getSvcUrl())) {
     
-    QueryRequest req = new QueryRequest();
-    ArrayList<Object> qrys = new ArrayList<Object>();
-    LinkedHashMap<String, Object> qry1 = new LinkedHashMap<String,Object>(), qry2 = new LinkedHashMap<String,Object>();
-    qry1.put("fs", "Montreal/N1");
-    qry1.put("definition", null);
-    qry1.put("neInfos", new ArrayList<NeInfo>());
-    qrys.add(qry1);
-    qry2.put("fs", "Quebec/N1");
-    qry2.put("definition", null);
-    qrys.add(qry2);
-    req.setQuery(qrys);
-
-    QueryResponse response = client.query(req, QueryResult.class);
-    Assert.assertEquals(response.getResult().size(), 2);
-    Assert.assertEquals(((QueryResult) response.getResult().get(0)).getFs(), "Montreal/N1");
-    Assert.assertEquals(((QueryResult) response.getResult().get(1)).getFs(), "Quebec/N1");
-    for (Object rObj: response.getResult()) {
-      QueryResult r = (QueryResult) rObj;
-      Assert.assertTrue(!r.getDefinition().isEmpty());
+      QueryRequest req = new QueryRequest();
+      ArrayList<Object> qrys = new ArrayList<Object>();
+      LinkedHashMap<String, Object> qry1 = new LinkedHashMap<String,Object>(), qry2 = new LinkedHashMap<String,Object>();
+      qry1.put("fs", "Montreal/N1");
+      qry1.put("definition", null);
+      qry1.put("neInfos", new ArrayList<NeInfo>());
+      qrys.add(qry1);
+      qry2.put("fs", "Quebec/N1");
+      qry2.put("definition", null);
+      qrys.add(qry2);
+      req.setQuery(qrys);
+  
+      QueryResponse response = client.query(req, QueryResult.class);
+      Assert.assertEquals(response.getResult().size(), 2);
+      Assert.assertEquals(((QueryResult) response.getResult().get(0)).getFs(), "Montreal/N1");
+      Assert.assertEquals(((QueryResult) response.getResult().get(1)).getFs(), "Quebec/N1");
+      for (Object rObj: response.getResult()) {
+        QueryResult r = (QueryResult) rObj;
+        Assert.assertTrue(!r.getDefinition().isEmpty());
+      }
+    } finally {
     }
-    client.close();
   }
   
-  static QueryRequest defaultRequest() throws JsonGenerationException, JsonMappingException, IOException {
+  static QueryRequest defaultRequest() {
     QueryRequest req = new QueryRequest();
     ArrayList<Object> qrys = new ArrayList<Object>();
     LinkedHashMap<String, Object> qry = new LinkedHashMap<String,Object>();

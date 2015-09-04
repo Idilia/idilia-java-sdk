@@ -1,7 +1,6 @@
 package com.idilia.services.text;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
@@ -21,7 +20,7 @@ public class AsyncClientTest extends TestBase {
 
   
   @Test
-  public void testMatch() {
+  public void testMatch() throws InterruptedException {
     // Perform a REST request to the paraphrase server
     try (AsyncClient client = new AsyncClient(getDefaultCreds(), Configuration.INSTANCE.getMatchApiUrl())) {
       final AtomicBoolean failed = new AtomicBoolean(false);
@@ -36,17 +35,13 @@ public class AsyncClientTest extends TestBase {
         req.setFilter("[{\"fsk\":\"Tide/N8\",\"keywords\":{\"positive\":[\"detergent\"],\"negative\":[\"crimson\"]}},{\"fsk\":\"like/V3\",\"keywords\":{\"negative\":[\"is like\"]}}]");
 
         CompletableFuture<MatchResponse> future = client.matchAsync(req);
-        future.handle((response, ex) -> {
+        future.whenComplete((response, ex) -> {
           try {
             if (ex != null) {
               logger_.error("encountered exception", ex);
               failed.set(true);
-            } else if (response.getStatus() == 200) {
-              failed.set(failed.get() || response.getErrorMsg() != null);
-              failed.set(failed.get() || !response.result.match);
             } else {
-              logger_.error("Failed request: " + response.getStatus() + " " + response.getErrorMsg());
-              failed.set(true);
+              failed.set(failed.get() || !response.result.match);
             }
           } catch (Exception e) {
             logger_.error("Caught exception", e);
@@ -55,21 +50,17 @@ public class AsyncClientTest extends TestBase {
           } finally {
             counter.countDown();
           }
-          return client;
         });
       }
       
       counter.await();
       Assert.assertFalse(failed.get());
-
-    } catch (Exception e) {
-      logger_.error("Got unexpected exception when running test", e);
-      Assert.assertTrue(false);
+    } finally {
     }
   }
 
   @Test
-  public void testMatchingEval() {
+  public void testMatchingEval() throws InterruptedException {
     // Perform a REST request to the paraphrase server
     try (AsyncClient client = new AsyncClient(getDefaultCreds(), Configuration.INSTANCE.getMatchApiUrl())) {
       final AtomicBoolean failed = new AtomicBoolean(false);
@@ -83,22 +74,18 @@ public class AsyncClientTest extends TestBase {
         req.setExpression(Collections.singletonList(new Sense(0, 1, "tide", "Tide/N8")));
 
         CompletableFuture<MatchingEvalResponse> future = client.matchingEvalAsync(req);
-        future.handle((response, ex) -> {
+        future.whenComplete((response, ex) -> {
           try {
             if (ex != null) {
               logger_.error("encountered exception", ex);
               failed.set(true);
-            } else if (response.getStatus() == 200) {
-              failed.set(failed.get() || response.getErrorMsg() != null);
+            } else  {
               failed.set(failed.get() || 
                   response.getResult() == null || 
                   response.getResult().size() != 3 || 
                   response.getResult().get(0) <= 0 || 
                   response.getResult().get(1) != 0 || 
                   response.getResult().get(2) >= 0 );
-            } else {
-              logger_.error("Failed request: " + response.getStatus() + " " + response.getErrorMsg());
-              failed.set(true);
             }
           } catch (Exception e) {
             logger_.error("Caught exception", e);
@@ -107,21 +94,18 @@ public class AsyncClientTest extends TestBase {
           } finally {
             counter.countDown();
           }
-          return response;
         });
       }
       
       counter.await();
       Assert.assertFalse(failed.get());
 
-    } catch (Exception e) {
-      logger_.error("Got unexpected exception when running test", e);
-      Assert.assertTrue(false);
+    } finally {
     }
   }
 
   @Test
-  public void testParaphrase() {
+  public void testParaphrase() throws InterruptedException {
     // Perform a REST request to the paraphrase server
     try (AsyncClient client = new AsyncClient(getDefaultCreds(), Configuration.INSTANCE.getParaphraseApiUrl())) {
       final AtomicBoolean failed = new AtomicBoolean(false);
@@ -135,13 +119,12 @@ public class AsyncClientTest extends TestBase {
         req.setWsdMime("application/x-semdoc+xml");
   
         CompletableFuture<ParaphraseResponse> future = client.paraphraseAsync(req);
-        future.handle((response, ex) -> {
+        future.whenComplete((response, ex) -> {
           try {
             if (ex != null) {
               logger_.error("encountered exception", ex);
               failed.set(true);
-          } else if (response.getStatus() == 200) {
-              failed.set(failed.get() || response.getErrorMsg() != null);
+          } else {
               failed.set(failed.get() || response.getParaphrases().size() <= 1);
               
               InputStream is = response.getWsdResult().getInputStream();
@@ -149,9 +132,6 @@ public class AsyncClientTest extends TestBase {
               String theResult = scanner.useDelimiter("\\A").next();
               scanner.close();
               failed.set(failed.get() || theResult.indexOf("query/N1") <= 0);
-            } else {
-              logger_.error("Failed request: " + response.getStatus() + " " + response.getErrorMsg());
-              failed.set(true);
             }
           } catch (Exception e) {
             logger_.error("Caught exception", e);
@@ -160,22 +140,19 @@ public class AsyncClientTest extends TestBase {
           } finally {
             counter.countDown();
           }
-          return response;
         });
       }
       
       counter.await();
       Assert.assertFalse(failed.get());
 
-    } catch (Exception e) {
-      logger_.error("Got unexpected exception when running test", e);
-      Assert.assertTrue(false);
+    } finally {
     }
   }
   
   
   @Test
-  public void testDisambiguate() {
+  public void testDisambiguate() throws InterruptedException {
     // Perform a REST request to the documentation server
     try (AsyncClient client = new AsyncClient(getDefaultCreds(), Configuration.INSTANCE.getDisambiguateApiUrl())) {
       final AtomicBoolean failed = new AtomicBoolean(false);
@@ -189,21 +166,17 @@ public class AsyncClientTest extends TestBase {
         req.setMaxTokens(200);
   
         CompletableFuture<DisambiguateResponse> future = client.disambiguateAsync(req);
-        future.handle((response, ex) -> {
+        future.whenComplete((response, ex) -> {
           try {
             if (ex != null) {
               logger_.error("encountered exception", ex);
               failed.set(true);
-            } else if (response.getStatus() == 200) {
-              failed.set(failed.get() || response.getErrorMsg() != null);
+            } else {
               InputStream is = response.getResult().getInputStream();
               Scanner scanner = new Scanner(is);
               String theResult = scanner.useDelimiter("\\A").next();
               scanner.close();
               failed.set(failed.get() || theResult.indexOf("query/N1") <= 0);
-            } else {
-              logger_.error("Failed request: " + response.getStatus() + " " + response.getErrorMsg());
-              failed.set(true);
             }
           } catch (Exception e) {
             logger_.error("Caught exception", e);
@@ -212,29 +185,25 @@ public class AsyncClientTest extends TestBase {
           } finally {
             counter.countDown();
           }
-          return response;
         });
       }
       counter.await();
       Assert.assertFalse(failed.get());
       
-    } catch (Exception e) {
-      logger_.error("Got unexpected exception when running test", e);
-      Assert.assertTrue(false);
+    } finally {
     }
   }
   
   
   @Test  
-  public void testEmptyTextASync() throws InvalidKeyException, InterruptedException {
+  public void testEmptyTextASync() throws InterruptedException {
     final CountDownLatch counter = new CountDownLatch(1);
     DisambiguateRequest disReq = new DisambiguateRequest();
     disReq.setText("", "text/plain", StandardCharsets.UTF_8);
     try (AsyncClient client = new AsyncClient(getDefaultCreds(), Configuration.INSTANCE.getDisambiguateApiUrl())) {
-      client.disambiguateAsync(disReq).handle((disResp, ex) -> {
+      client.disambiguateAsync(disReq).whenComplete((disResp, ex) -> {
         Assert.assertNotNull(ex);
         counter.countDown();
-        return null;
       });
     } finally {
     }

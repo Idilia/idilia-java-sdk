@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
+import com.idilia.services.base.IdiliaClientException;
 import com.idilia.services.base.RequestBase;
 
 public abstract class MenuRequest extends RequestBase {
@@ -69,15 +70,17 @@ public abstract class MenuRequest extends RequestBase {
   }
 
   @Override
-  protected void getHttpQueryParms(List<NameValuePair> parms) throws IllegalStateException {
+  protected void getHttpQueryParms(List<NameValuePair> parms) throws IdiliaClientException {
+    if (tmplt == null)
+      throw new IdiliaClientException("Parameter template must be set");
+    
     if (fskInfos != null)
       parms.add(new BasicNameValuePair("fskInfos", fskInfos));
     if (filters != null)
       parms.add(new BasicNameValuePair("filters", filters));
     if (collapsing != null)
       parms.add(new BasicNameValuePair("collapsing", collapsing));
-    if (tmplt != null)
-      parms.add(new BasicNameValuePair("template", tmplt));
+    parms.add(new BasicNameValuePair("template", tmplt));
     if (addAnySense != null)
       parms.add(new BasicNameValuePair("addAnySense", addAnySense));
     if (addCreateSense != null)
@@ -89,7 +92,7 @@ public abstract class MenuRequest extends RequestBase {
   private String fskInfos;
   private String filters;
   private String collapsing;
-  private String tmplt = "image_v2";
+  private String tmplt;
   private String addAnySense;
   private String addCreateSense;
 }

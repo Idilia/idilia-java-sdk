@@ -17,6 +17,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.idilia.services.base.IdiliaClientException;
 import com.idilia.services.base.RequestBase;
 
 /**
@@ -32,7 +33,7 @@ public class QueryRequest extends RequestBase {
     setQuery(query);
   }
   
-  public QueryRequest(Iterable<? extends Object> qrys) throws JsonProcessingException {
+  public QueryRequest(Iterable<? extends Object> qrys) throws IdiliaClientException {
     setQuery(qrys);
   }
   
@@ -49,8 +50,12 @@ public class QueryRequest extends RequestBase {
   }
   
   
-  public void setQuery(Iterable<? extends Object> qrys) throws JsonProcessingException {
-    query = new ObjectMapper().writeValueAsBytes(qrys);
+  public void setQuery(Iterable<? extends Object> qrys) throws IdiliaClientException {
+    try {
+      query = new ObjectMapper().writeValueAsBytes(qrys);
+    } catch (JsonProcessingException e) {
+      throw new IdiliaClientException(e);
+    }
   }
   
 
@@ -68,12 +73,11 @@ public class QueryRequest extends RequestBase {
   //
   // Protected and abstract methods for the subclasses to implement
   
-  // Encode the content as HTTP query parameters
   @Override
-  protected void getHttpQueryParms(List<NameValuePair> parms) throws IllegalStateException {
+  protected void getHttpQueryParms(List<NameValuePair> parms) throws IdiliaClientException {
     
     if (this.query == null)
-      throw new IllegalStateException("No query specified");
+      throw new IdiliaClientException("No query specified");
     
     // Add base parameters
     super.getHttpQueryParms(parms);

@@ -2,7 +2,6 @@ package com.idilia.services.kb;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 
@@ -25,18 +24,19 @@ public class AsyncClient extends AsyncClientBase {
    * Constructs a client for requesting kb services provided at the default service URL.
    * <p>
    * This is a lightweight object. Allocated instances share an underlying HTTP client.
+   * Multithread safe.
    * <p>
    * @param creds Idilia API credentials
-   * @throws MalformedURLException
    */
-  public AsyncClient(IdiliaCredentials creds) throws MalformedURLException {
-    this(creds, new URL("http://api.idilia.com/"));
+  public AsyncClient(IdiliaCredentials creds) {
+    this(creds, defaultApiUrl);
   }
 
   /**
    * Constructs a client for requesting kb services provided at the given service URL.
    * <p>
    * This is a lightweight object. Allocated instances share an underlying HTTP client.
+   * Multithread safe.
    * <p>
    * @param creds Idilia API credentials
    * @param url   URL to reach the API. Normally http://api.idilia.com
@@ -86,7 +86,7 @@ public class AsyncClient extends AsyncClientBase {
 
     public QueryResponse completedHdlr(HttpResponse httpResponse) throws IdiliaClientException, JsonParseException, UnsupportedOperationException, IOException {
 
-      QueryResponse resp = KbQueryCodec.decode(jsonMapper_, tpRef, httpResponse.getEntity());
+      QueryResponse resp = QueryCodec.decode(jsonMapper_, tpRef, httpResponse.getEntity());
       if (resp.getStatus() != HttpURLConnection.HTTP_OK)
         throw new IdiliaClientException(resp);
       return resp;

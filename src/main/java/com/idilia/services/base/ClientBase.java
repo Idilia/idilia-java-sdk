@@ -8,6 +8,7 @@ package com.idilia.services.base;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -145,4 +146,13 @@ public class ClientBase {
   final protected URL serviceUrl;
   final protected static String HMAC_SHA_ALGORITHM = "HmacSHA256";
   final protected static ObjectMapper jsonMapper_ = new ObjectMapper();
+  final protected static URL defaultApiUrl;
+  static {
+    try {
+      defaultApiUrl = new URL("http://api.idilia.com");
+    } catch (MalformedURLException e) {
+      throw new IdiliaClientException(e);
+    }
+  }
+  
 }

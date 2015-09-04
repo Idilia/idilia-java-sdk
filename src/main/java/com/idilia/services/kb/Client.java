@@ -15,7 +15,6 @@ package com.idilia.services.kb;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.http.HttpEntity;
@@ -42,12 +41,12 @@ public class Client extends SyncClientBase {
    * Constructs a client for requesting text services provided at the default service URL.
    * <p>
    * This is a lightweight object. Allocated instances share an underlying HTTP client.
+   * Multithread safe.
    * <p>
    * @param creds
-   * @throws MalformedURLException
    */
-  public Client(IdiliaCredentials creds) throws MalformedURLException {
-    this(creds, new URL("http://api.idilia.com/"));
+  public Client(IdiliaCredentials creds) {
+    this(creds, defaultApiUrl);
   }
   
   
@@ -55,6 +54,7 @@ public class Client extends SyncClientBase {
    * Constructs a client for requesting text services provided at the given service URL.
    * <p>
    * This is a lightweight object. Allocated instances share an underlying HTTP client.
+   * Multithread safe.
    * <p>
    * @param creds
    */
@@ -87,7 +87,7 @@ public class Client extends SyncClientBase {
     try (CloseableHttpResponse httpResponse = getServerResponse(req)) {
     
       // Recover the response.
-      QueryResponse resp = KbQueryCodec.decode(jsonMapper_, tpRef, httpResponse.getEntity());
+      QueryResponse resp = QueryCodec.decode(jsonMapper_, tpRef, httpResponse.getEntity());
       if (resp.getStatus() != HttpURLConnection.HTTP_OK)
         throw new IdiliaClientException(resp);
       return resp;

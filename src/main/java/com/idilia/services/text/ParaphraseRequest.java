@@ -12,7 +12,6 @@
 package com.idilia.services.text;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Objects;
@@ -20,6 +19,7 @@ import java.util.Objects;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
+import com.idilia.services.base.IdiliaClientException;
 import com.idilia.services.base.RequestBase;
 
 /**
@@ -167,8 +167,7 @@ public class ParaphraseRequest extends RequestBase {
     this.actionNouns = getUserAction(action);
   }
 
-  public static String getUserAction(UserAction action)
-      throws IllegalStateException {
+  public static String getUserAction(UserAction action) {
     switch (action) {
     case PARAPHRASE:
       return "paraphrase";
@@ -176,9 +175,8 @@ public class ParaphraseRequest extends RequestBase {
       return "freeze";
     case REMOVE:
       return "remove";
-    default:
-      throw new IllegalStateException("unknown action");
     }
+    return null;
   }
 
   public static UserAction getUserAction(String action)
@@ -193,7 +191,7 @@ public class ParaphraseRequest extends RequestBase {
     if (action != null && action.equals("remove"))
       return UserAction.REMOVE;
 
-    throw new IllegalStateException("null or unknown action");
+    throw new IdiliaClientException("null or unknown action");
   }
 
   public final void setTransformationSynonymy(String value) {
@@ -334,10 +332,10 @@ public class ParaphraseRequest extends RequestBase {
   // Encode the content as HTTP query parameters
   @Override
   protected void getHttpQueryParms(List<NameValuePair> parms)
-      throws IllegalStateException {
+      throws IdiliaClientException {
 
     if (this.text == null || this.text.length() == 0)
-      throw new IllegalStateException("No text specified");
+      throw new IdiliaClientException("No text specified");
 
     // Add base parameters
     super.getHttpQueryParms(parms);

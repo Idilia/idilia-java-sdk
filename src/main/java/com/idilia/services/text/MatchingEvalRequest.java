@@ -8,6 +8,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.idilia.services.base.IdiliaClientException;
 import com.idilia.services.base.RequestBase;
 import com.idilia.tagging.Sense;
 
@@ -18,11 +19,8 @@ import com.idilia.tagging.Sense;
 public class MatchingEvalRequest extends RequestBase {
 
   private String expression;
-  private List<String> documents;
+  private String documents;
   
-  final String getExpression() {
-    return expression;
-  }
 
   /**
    * Set the match expression words and their meaning.
@@ -31,23 +29,29 @@ public class MatchingEvalRequest extends RequestBase {
    * tagging menu plugin.
    * <p>
    * @param senses A Sense for each word in the match expression
-   * @throws JsonProcessingException if the given senses cannot be serialized to a string
+   * @throws IdiliaClientException if the given senses cannot be serialized
    */
-  public final void setExpression(List<Sense> senses) throws JsonProcessingException {
-    this.expression = jsonMapper.writeValueAsString(senses);
+  public final void setExpression(List<Sense> senses) throws IdiliaClientException {
+    try {
+      this.expression = jsonMapper.writeValueAsString(senses);
+    } catch (JsonProcessingException e) {
+      throw new IdiliaClientException(e);
+    }
   }
   
-  final List<String> getDocuments() {
-    return documents;
-  }
 
   /**
    * Set the list of documents to evaluate.
    * 
    * @param documents plain text string for each document to evaluate
+   * @throws IdiliaClientException if the given documents cannot be serialized
    */
-  public final void setDocuments(List<String> documents) {
-    this.documents = documents;
+  public final void setDocuments(List<String> documents) throws IdiliaClientException {
+    try {
+      this.documents = jsonMapper.writeValueAsString(documents);
+    } catch (JsonProcessingException e) {
+      throw new IdiliaClientException(e);
+    }
   }
 
   @Override
@@ -61,15 +65,10 @@ public class MatchingEvalRequest extends RequestBase {
   }
 
   @Override
-  protected void getHttpQueryParms(List<NameValuePair> parms) throws IllegalStateException {
+  protected void getHttpQueryParms(List<NameValuePair> parms) throws IdiliaClientException {
     super.getHttpQueryParms(parms);
     parms.add(new BasicNameValuePair("expression", expression));
-    
-    // Convert the array of documents to a JSON array
-    try {
-      parms.add(new BasicNameValuePair("documents", jsonMapper.writeValueAsString(documents)));
-    } catch (IOException ioe) {
-    }
+    parms.add(new BasicNameValuePair("documents", documents));
   }
   
   static private final ObjectMapper jsonMapper = new ObjectMapper();

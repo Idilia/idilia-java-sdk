@@ -7,76 +7,73 @@ import java.util.Objects;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
+import com.idilia.services.base.IdiliaClientException;
 import com.idilia.services.base.RequestBase;
 
 public class SenseCardRequest extends RequestBase {
   
-  public enum Special { 
-    other,
-    any,    // the any sense card
-    filler, // card for a filler word or punctuation
-  };
-  
   public SenseCardRequest() {}
-  public SenseCardRequest(String fsk) { this.fsk = fsk; }
   
   /**
-   * Construct a sense request for a special card.
-   * @param sp Type of special card requested
-   * @param word Optional argument. When provided becomes that card title and value in data-fsk
+   * Construct a request for the given sensekey.
+   * <p>
+   * @param fsk sense key of the card. This is a sense from the Knowledge Base
+   * (e.g., dog/N1) or one of the special meaning forms:
+   * <ul>
+   * <li> word/_UNK_: A card with "other" meaning
+   * <li> word/_INA_: A card with "not a meaning" (e.g., closed class words)
+   * <li> word/_WC_: A card with "any" meaning (i.e., wildcard)
+   * </ul>
+   * <p>
    */
-  public SenseCardRequest(Special sp, String word) {
-    this.special = sp.toString();
-    this.word = word;
-  }
-  
-  //
-  // Accessors
-  //
-  public final String getSenseKey() {
-    return fsk;
-  }
-  
-  public final SenseCardRequest setSenseKey(String fsk) {
+  public SenseCardRequest(String fsk) { 
     this.fsk = fsk;
-    return this;
   }
   
+  /**
+   * Set the template for the card. Defaults to "image_v2". If the name of the template
+   * starts with "menu_" (e.g., menu_image_v2), the card returned is in the same
+   * format as the cards in a sense menu. Otherwise the card use the large card format.
+   * @param t template to use when generating the card
+   * @return updated request object
+   */
   public final SenseCardRequest setTemplate(String t) {
     this.tmplt = t;
     return this;
   }
   
-  // Encode the content as HTTP query parameters
+  /**
+   * The number of tokens spanned in the text is an attribute of a card in a tagging menu.
+   * This parameter can be set to obtain a card suitable for insertion into a menu. Normally
+   * used with a template starting with "menu_".
+   * @param len value to set as the data-len attribute in the generated card
+   * @return updated request object
+   */
+  public final SenseCardRequest setLength(Integer len) {
+    this.len = len;
+    return this;
+  }
+  
   @Override
-  protected void getHttpQueryParms(List<NameValuePair> parms) throws IllegalStateException {
+  protected void getHttpQueryParms(List<NameValuePair> parms) throws IdiliaClientException {
+    
+    if (tmplt == null)
+      throw new IdiliaClientException("Parameter template must be set");
     
     // Add base parameters
     super.getHttpQueryParms(parms);
-    if (fsk != null)
-      parms.add(new BasicNameValuePair("fsk", fsk));
-    if (tmplt != null)
-      parms.add(new BasicNameValuePair("template", tmplt));
-    if (special != null)
-      parms.add(new BasicNameValuePair("special", special));
-    if (word != null)
-      parms.add(new BasicNameValuePair("word", word));
+    parms.add(new BasicNameValuePair("fsk", fsk));
+    parms.add(new BasicNameValuePair("template", tmplt));
+    if (len != null)
+      parms.add(new BasicNameValuePair("len", len.toString()));
   }
   
   
-  // Return the content to sign when creating the authentication information
   @Override
   final public byte[] toSign() throws IOException {
-    if (fsk != null)
-      return fsk.getBytes();
-    else
-      return special.getBytes();
+    return fsk.getBytes();
   }
   
-  /**
-   * Returns the request path for the appropriate REST method on the server.
-   * @return request path.
-   */
   @Override
   public String requestPath() {
     return new String("/1/kb/sense_card.json");
@@ -84,7 +81,7 @@ public class SenseCardRequest extends RequestBase {
   
   @Override
   public int hashCode() {
-    return Objects.hash(fsk, word);
+    return fsk.hashCode();
   }
   
   @Override
@@ -94,21 +91,15 @@ public class SenseCardRequest extends RequestBase {
     SenseCardRequest other = (SenseCardRequest) o;
     return Objects.equals(fsk, other.fsk) &&
         Objects.equals(tmplt, other.tmplt) &&
-        Objects.equals(special, other.special) &&
-        Objects.equals(word, other.word) &&
         true;
   }
   
   @Override
   public String toString() {
-    if (fsk == null)
-      return String.format("[SCR]: special: %s, word: %s", special, (word == null ? "" : word).toString());
-    else
-      return String.format("[SCR]: fsk: %s", fsk);
+    return String.format("[SCR]: fsk: %s", fsk);
   }
   // Data elements
-  private String fsk;                    // the sensekey
-  private String tmplt = "image_v2";     // the template
-  private String special;                // special card indicator
-  private String word;                   // word used in a special card
+  private String fsk;
+  private String tmplt;
+  private Integer len;
 }
