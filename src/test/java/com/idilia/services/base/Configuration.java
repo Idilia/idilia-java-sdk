@@ -37,13 +37,14 @@ public enum Configuration {
     String file = new String("/services.properties");
     try {
       parms_.load(this.getClass().getResourceAsStream("/services.properties"));
-      disambiguateApiUrl = new URL(getProperty("disambiguateApiUrl"));
-      kbApiUrl = new URL(getProperty("kbApiUrl"));
-      matchApiUrl = new URL(getProperty("matchApiUrl"));
-      paraphraseApiUrl = new URL(getProperty("paraphraseApiUrl"));
-      textIndexApiUrl = new URL(getProperty("textIndexApiUrl"));
-      idiliaAccessKey = getProperty("idiliaAccessKey");
-      idiliaSecretKey = getProperty("idiliaSecretKey");
+      String defaultApiUrl = getProperty("apiUrl", "http://api.idilia.com");
+      disambiguateApiUrl = new URL(getProperty("disambiguateApiUrl", defaultApiUrl));
+      kbApiUrl = new URL(getProperty("kbApiUrl", defaultApiUrl));
+      matchApiUrl = new URL(getProperty("matchApiUrl", defaultApiUrl));
+      paraphraseApiUrl = new URL(getProperty("paraphraseApiUrl", defaultApiUrl));
+      textIndexApiUrl = new URL(getProperty("textIndexApiUrl", defaultApiUrl));
+      idiliaAccessKey = getProperty("idiliaAccessKey", null);
+      idiliaSecretKey = getProperty("idiliaSecretKey", null);
       idiliaCredentials = new IdiliaCredentials(idiliaAccessKey, idiliaSecretKey);
 
     } catch (Exception e) {
@@ -101,7 +102,7 @@ public enum Configuration {
 
   final private Properties parms_ = new Properties();
 
-  private String getProperty(String name)
+  private String getProperty(String name, String defaultValue)
   {
     String valueS = null;
 
@@ -122,6 +123,9 @@ public enum Configuration {
     // If unknown, try from the environment
     if (valueS == null)
       valueS = System.getProperty(name);
+
+    if (valueS == null)
+      valueS = defaultValue;
 
     if (valueS == null)
       Logger.getRootLogger().error(String.format("Failed to obtain a value for parameter %s", name));
