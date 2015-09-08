@@ -78,7 +78,7 @@ public class MatchRequest extends RequestBase {
    * See https://www.idilia.com/developer/sense-analysis/concepts/sense-analysis-recipes
    * for possible values.
    * 
-   * @param recipeKey
+   * @param recipeKey recipe label for sense analysis
    */
   public final void setDisambiguationRecipe(String recipeKey) {
     this.disambiguationRecipe = recipeKey;
@@ -98,7 +98,7 @@ public class MatchRequest extends RequestBase {
    *  at the @resultURI except that it does not contain the actual disambiguation
    *  result.
    *  
-   *  @param notificationURI
+   *  @param notificationURI uri to notify on completion
    *  
    */
   
@@ -126,22 +126,13 @@ public class MatchRequest extends RequestBase {
    *  When using an AWS S3 bucket, the bucket must be writable by the account
    *  operating the servers. Please refer to our web site for our account number.
    *  
-   *  @param resultURI
+   *  @param resultURI uri to store asynchronous result
    */
   public final void setResultURI(String resultURI) {
     this.resultURI = resultURI;
   }
 
 
-  /**
-   * Provides the query to process. 
-   * 
-   * @param text
-   */
-  public final void setText(String text) {
-    this.text = text;
-  }
-  
   /**
    * Provides the query to process as a String + Mime + Charset
    * 
@@ -152,26 +143,16 @@ public class MatchRequest extends RequestBase {
    * @param chSet Character set for the text encoding
    */
   public final void setText(String text, String mime, Charset chSet) {
-    setText(text);
-    setTextMime(mime, chSet);
+    this.text = text;
+    this.textMime = mime + ";charset=" + chSet.name();
   }
   
-  /**
-   * Provides the character set of @text
-   * @param mime
-   * @param chSet
-   */
-  public final void setTextMime(String mime, Charset chSet) {
-    this.textMime = mime;
-    if (chSet != null)
-      this.textMime +=";charset=" + chSet.name();
-  }
 
   /**
    * 
    * Sets filter parameter
    * 
-   * @param filterSpec
+   * @param filterSpec filter spec
    */
   public final void setFilter(String filterSpec)  {
       filters = filterSpec;
@@ -193,7 +174,7 @@ public class MatchRequest extends RequestBase {
    * computation time exceeds this limit, the request aborts immediately and 
    * returns HTTP 504. Useful for real-time applications.
    * 
-   * @param timeout 
+   * @param timeout units of hundreds of milliseconds for returning a result
    */
   public void setTimeout(Integer timeout) {
     this.timeout = timeout;
@@ -223,17 +204,11 @@ public class MatchRequest extends RequestBase {
   }
 
 
-  // Return the name of the REST path used when accessing the server
-  /**
-   * Returns the request path for the appropriate REST method on the server.
-   * @return request path.
-   */
   @Override
   final public String requestPath() {
     return "/1/text/match.json";
   }
     
-  // Encode the content as HTTP query parameters
   @Override
   protected void getHttpQueryParms(List<NameValuePair> parms) throws IllegalStateException {
     
@@ -263,7 +238,6 @@ public class MatchRequest extends RequestBase {
       parms.add(new BasicNameValuePair("filters", filters));
   }
   
-  // Return the content to sign when creating the authentication information
   @Override
   final public byte[] toSign() throws IOException {
     return text.getBytes();

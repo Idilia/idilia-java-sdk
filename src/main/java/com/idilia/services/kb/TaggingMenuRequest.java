@@ -20,12 +20,21 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.idilia.services.base.IdiliaClientException;
 import com.idilia.services.text.DisambiguatedDocument;
 
+/**
+ * Request message to obtain a tagging menu for multiple words. The sense menu is constructed
+ * from a sense analysis of the text. This sense analysis is obtained using the text/disambiguate
+ * API and is provided as part of this request.
+ * <p>
+ * When the text is only a single word, a SenseMenuRequest may be used instead.
+ */
 public class TaggingMenuRequest extends MenuRequest {
 
-  @JsonIgnore
-  public final ContentBody getTf() {
-    return tf;
-  }
+  /**
+   * Provide the sense inventory of the tagging menu using a disambiguation result.
+   * @param tf a disambiguate result with resultMime application/x-tf+xml or application/x-tf+xml+gz
+   * @return updated TaggingMenuRequest
+   * @throws IdiliaClientException when the disambiguated result cannot be extracted
+   */
   @JsonIgnore
   public final TaggingMenuRequest setTf(DisambiguatedDocument tf) throws IdiliaClientException {
     try {
@@ -48,16 +57,22 @@ public class TaggingMenuRequest extends MenuRequest {
     }
   }
   
-  public final int getTfStart() {
-    return tfStart;
-  }
+  /**
+   * Set a starting offset in the disambiguate result for the tagging menu. Defaults to the first token
+   * (i.e., offset 0).
+   * @param tfStart starting offset. Must be between 0 and last token of the document provided with #setTf
+   * @return updated TaggingMenuRequest
+   */
   public final TaggingMenuRequest setTfStart(int tfStart) {
     this.tfStart = tfStart;
     return this;
   }
-  public final int getTfEnd() {
-    return tfEnd;
-  }
+  
+  /**
+   * Set the end offset in the disambiguate result for the tagging menu. Defaults to one past the last token.
+   * @param tfEnd end offset. Must be between 1 and one past the last token of the document provided with #setTf
+   * @return updated TaggingMenuRequest
+   */
   public final TaggingMenuRequest setTfEnd(int tfEnd) {
     this.tfEnd = tfEnd;
     return this;
@@ -110,6 +125,6 @@ public class TaggingMenuRequest extends MenuRequest {
     return signOs.toByteArray();
   }
   
-  private ContentBody tf;       // textfeatures, when senseSource is "req"
-  private int tfStart = -1, tfEnd = -1;    // fragment of TF to select
+  private ContentBody tf;
+  private int tfStart = -1, tfEnd = -1;
 }

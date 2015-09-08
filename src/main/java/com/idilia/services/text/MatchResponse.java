@@ -49,16 +49,4 @@ public class MatchResponse extends ResponseBase {
 
   public MatchResult result;
   public WSD wsd;
-  
-  /**
-   * Creates an empty object. Normally not used by application code.
-   */
-  public MatchResponse() {}
-
-  /**
-   * Creates an object with an error condition. Normally not used by application code.
-   */
-  public MatchResponse(int status, String errorMsg) {
-    super(status, errorMsg);
-  }
 }

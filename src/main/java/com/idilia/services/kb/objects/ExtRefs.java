@@ -1,8 +1,8 @@
-/*
- * Definition of elements returned for property "extRefs"
- */
 package com.idilia.services.kb.objects;
 
+/**
+ * Definition of elements returned for property "extRefs"
+ */
 public class ExtRefs extends ExtRef {
   private String url;  // the url to obtain the entity
 

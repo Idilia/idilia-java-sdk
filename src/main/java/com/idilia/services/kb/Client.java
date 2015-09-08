@@ -43,7 +43,7 @@ public class Client extends SyncClientBase {
    * This is a lightweight object. Allocated instances share an underlying HTTP client.
    * Multithread safe.
    * <p>
-   * @param creds
+   * @param creds Idilia API credentials for a project
    */
   public Client(IdiliaCredentials creds) {
     this(creds, defaultApiUrl);
@@ -56,7 +56,8 @@ public class Client extends SyncClientBase {
    * This is a lightweight object. Allocated instances share an underlying HTTP client.
    * Multithread safe.
    * <p>
-   * @param creds
+   * @param creds Idilia API credentials for a project
+   * @param url   URL to reach the API. Normally http://api.idilia.com
    */
   public Client(IdiliaCredentials creds, URL url) {
     super(creds, url);
@@ -78,6 +79,8 @@ public class Client extends SyncClientBase {
   /**
    * Sends a kb/query request to the kb server.
    * 
+   * @param <T> A POJO that can be JSON serialized and reconstituted. The query and responses may include
+   *           multiple instances of it. 
    * @param req   Request message. One concrete implementation of {@link QueryRequest}
    * @param tpRef Type of the object into which to deserialize the result of each query.
    * @return {@link QueryResponse}
@@ -99,6 +102,9 @@ public class Client extends SyncClientBase {
 
   /**
    * Sends a request to obtain a sense menu
+   * @param req populated req menu request
+   * @return an instance of SenseMenuResponse with the decoded result from the server
+   * @throws IdiliaClientException on any error encountered
    */
   public SenseMenuResponse senseMenu(SenseMenuRequest req) throws IdiliaClientException {
     try (CloseableHttpResponse httpResponse = getServerResponse(req)) {
@@ -124,6 +130,9 @@ public class Client extends SyncClientBase {
   
   /**
    * Sends a request to obtain a tagging menu
+   * @param req populated req menu request
+   * @return an instance of TaggingMenuResponse with the decoded result from the server
+   * @throws IdiliaClientException on any error encountered
    */
   public TaggingMenuResponse taggingMenu(TaggingMenuRequest req) throws IdiliaClientException {
     try (CloseableHttpResponse httpResponse = getServerResponse(req)) {
@@ -149,7 +158,7 @@ public class Client extends SyncClientBase {
   
   /**
    * Retrieve a sense card an as HTML string.
-   * @param req
+   * @param req populated sense card request
    * @return A string containing the card's HTML
    * @throws IdiliaClientException when the request is not successful for any reason
    */
@@ -164,7 +173,7 @@ public class Client extends SyncClientBase {
       
       String ct = rxEntity.getContentType().getValue();
       if (!ct.startsWith("application/json"))
-        throw new IdiliaClientException("Unexpected content type");
+        throw new IdiliaClientException("Unexpected content type: " + ct);
   
       SenseCardResponse resp = jsonMapper_.readValue(rxEntity.getContent(), SenseCardResponse.class);
       if (resp.getStatus() != HttpURLConnection.HTTP_OK)

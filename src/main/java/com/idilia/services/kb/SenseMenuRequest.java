@@ -8,19 +8,33 @@ import org.apache.http.message.BasicNameValuePair;
 
 import com.idilia.services.base.IdiliaClientException;
 
+/**
+ * Request message to obtain a sense menu for a single word or a multi-word expression known
+ * in the Language Graph.
+ * <p>
+ * When the text may contain multiple distinct words, a TaggingMenuRequest should be used.
+ */
 public class SenseMenuRequest extends MenuRequest {
   
-  public final String getText() {
-    return text;
-  }
+  /**
+   * Specify the text used to generate the sense menu. This text must correspond to a known
+   * entry in the Language Graph. If the text is not found, an IdiliaClientException with status
+   * "not found" is thrown when the request is processed.
+   * @param text string with a word from the Language Graph.
+   * @return updated SenseMenuRequest
+   */
   public final SenseMenuRequest setText(String text) {
     this.text = text;
     return this;
   }
 
-  public String getSelectedFsk() {
-    return selectedFsk;
-  }
+  /**
+   * Specify which sense tile to select by default. Normally no sense are selected but the most
+   * frequent senses are listed first. This ensures that the given sense is listed first and
+   * appears selected.
+   * @param s sensekey of the menu sense to automatically select.
+   * @return updated SenseMenuRequest
+   */
   public SenseMenuRequest setSelectedFsk(String s) {
     this.selectedFsk = s;
     return this;
@@ -68,6 +82,6 @@ public class SenseMenuRequest extends MenuRequest {
     return text.getBytes();
   }
 
-  private String text;                    // when no supplying a tf
-  private String selectedFsk; // sense to mark as selected in 
+  private String text;
+  private String selectedFsk;
 }

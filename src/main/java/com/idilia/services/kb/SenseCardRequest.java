@@ -10,6 +10,9 @@ import org.apache.http.message.BasicNameValuePair;
 import com.idilia.services.base.IdiliaClientException;
 import com.idilia.services.base.RequestBase;
 
+/**
+ * Request message for a sense card
+ */
 public class SenseCardRequest extends RequestBase {
   
   public SenseCardRequest() {}
@@ -24,7 +27,6 @@ public class SenseCardRequest extends RequestBase {
    * <li> word/_INA_: A card with "not a meaning" (e.g., closed class words)
    * <li> word/_WC_: A card with "any" meaning (i.e., wildcard)
    * </ul>
-   * <p>
    */
   public SenseCardRequest(String fsk) { 
     this.fsk = fsk;

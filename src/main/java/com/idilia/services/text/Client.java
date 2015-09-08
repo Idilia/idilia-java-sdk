@@ -46,8 +46,8 @@ public class Client extends SyncClientBase
    * <p>
    * This is a lightweight object. Allocated instances share an underlying HTTP client.
    * Multithread safe.
-   * <p>
-   * @param creds
+   * 
+   * @param creds Idilia API credentials for a project
    */
   public Client(IdiliaCredentials creds) {
     this(creds, defaultApiUrl);
@@ -59,8 +59,9 @@ public class Client extends SyncClientBase
    * <p>
    * This is a lightweight object. Allocated instances share an underlying HTTP client.
    * Multithread safe.
-   * <p>
-   * @param creds
+   * 
+   * @param creds Idilia API credentials for a project
+   * @param url   URL to reach the API. Normally http://api.idilia.com
    */
   public Client(IdiliaCredentials creds, URL url) {
     super(creds, url);

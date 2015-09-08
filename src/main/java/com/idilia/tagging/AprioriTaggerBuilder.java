@@ -25,7 +25,7 @@ public class AprioriTaggerBuilder {
    * is case sensitive.
    *
    * @param ci true for enabling case insensitive matching
-   * @return self
+   * @return updated builder
    */
   public AprioriTaggerBuilder setCaseInsensitive(boolean ci) {
     this.caseInsensitive = ci;
@@ -37,7 +37,7 @@ public class AprioriTaggerBuilder {
    * noun common word senses provided. The pluralization rule is very approximate
    * and does not handle exceptions.
    * @param v true for enabling plural noun matching
-   * @return
+   * @return updated builder
    */
   public AprioriTaggerBuilder setMatchesPluralNouns(boolean v) {
     this.acceptPlurals = v;

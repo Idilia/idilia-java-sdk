@@ -26,7 +26,7 @@ public class AsyncClient extends AsyncClientBase {
    * This is a lightweight object. Allocated instances share an underlying HTTP client.
    * Multithread safe.
    * <p>
-   * @param creds Idilia API credentials
+   * @param creds Idilia API credentials for a project
    */
   public AsyncClient(IdiliaCredentials creds) {
     this(creds, defaultApiUrl);
@@ -38,7 +38,7 @@ public class AsyncClient extends AsyncClientBase {
    * This is a lightweight object. Allocated instances share an underlying HTTP client.
    * Multithread safe.
    * <p>
-   * @param creds Idilia API credentials
+   * @param creds Idilia API credentials for a project
    * @param url   URL to reach the API. Normally http://api.idilia.com
    */
   public AsyncClient(IdiliaCredentials creds, URL url) {
@@ -52,6 +52,8 @@ public class AsyncClient extends AsyncClientBase {
    * Asynchronously sends an HTTP request to the kb server and signals the returned
    * future when the result is available. 
    * 
+   * @param <T> A POJO that can be JSON serialized and reconstituted. The query and responses may include
+   *           multiple instances of it. 
    * @param req Request message. One concrete implementation of {@link QueryRequest}
    * @param tpRef type of the class of object to recover from the JSON response. Can be Object.class
    *              or a user defined class.

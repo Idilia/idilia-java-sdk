@@ -1,9 +1,8 @@
-/*
- * Definition for elements returned by link queries
- */
-
 package com.idilia.services.kb.objects;
 
+/**
+ * Definition for elements returned by link queries
+ */
 public class Link {
   private String src;  // source node nid
   private String dest; // destination node id

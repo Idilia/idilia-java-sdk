@@ -10,7 +10,7 @@ import com.idilia.services.base.ResponseBase;
 
 
 /**
- * Response from the KnowledgeBase server.
+ * Response from the KnowledgeBase server for a QueryRequest.
  *
  */
 public class QueryResponse extends ResponseBase {
@@ -20,6 +20,9 @@ public class QueryResponse extends ResponseBase {
    * Returns the server's response as an array of objects
    * where each object contains the result of one query.
    * This is using Simple Data Binding from Jackson JSON.
+   * @return a list of of objects for each recovered result from the server. Each of these
+   *          object can be casted to the POJO type specified in 
+   *          Client#query(QueryRequest, Class&lt;T&gt;)
    */
   public final ArrayList<Object> getResult() {
     return this.result;
@@ -28,29 +31,24 @@ public class QueryResponse extends ResponseBase {
   
   /**
    * Store the query results received in the server's response. Normally not used by application code.
+   * @param result the recovered objects
    */
-  public final void setResult(ArrayList<Object> result) {
+  void setResult(ArrayList<Object> result) {
     this.result = result;
   }
   
   /**
    * Adds a query results received in the server's response. Normally not used by application code.
+   * @param result a recovered object
    */
-  public final void addResult(Object result) {
+  void addResult(Object result) {
     this.result.add(result);
   }
 
   /**
    * Creates an empty object. Normally not used by application code.
    */
-  public QueryResponse() {}
+  QueryResponse() {}
 
-  /**
-   * Creates an object with an error condition. Normally not used by application code.
-   */
-  public QueryResponse(int status, String errorMsg) {
-    super(status, errorMsg);
-  }
-  
   private ArrayList<Object> result;
 }

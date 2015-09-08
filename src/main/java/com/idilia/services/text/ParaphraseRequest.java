@@ -242,14 +242,6 @@ public class ParaphraseRequest extends RequestBase {
     this.resultURI = resultURI;
   }
 
-  /**
-   * Provides the query to process.
-   * 
-   * @param text query to process
-   */
-  public final void setText(String text) {
-    this.text = text;
-  }
 
   /**
    * Provides the query to process as a String + Mime + Charset
@@ -265,20 +257,8 @@ public class ParaphraseRequest extends RequestBase {
    *          Character set for the text encoding
    */
   public final void setText(String text, String mime, Charset chSet) {
-    setText(text);
-    setTextMime(mime, chSet);
-  }
-
-  /**
-   * Provides the character set of @text
-   * 
-   * @param mime
-   * @param chSet
-   */
-  public final void setTextMime(String mime, Charset chSet) {
-    this.textMime = mime;
-    if (chSet != null)
-      this.textMime += ";charset=" + chSet.name();
+    this.text = text;
+    this.textMime = mime + ";charset=" + chSet.name();
   }
 
   /**

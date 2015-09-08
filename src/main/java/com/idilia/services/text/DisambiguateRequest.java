@@ -51,7 +51,7 @@ public class DisambiguateRequest extends RequestBase {
    *  <li> application/x-tf:       A TextFeatures in binary format.
    *  <li> application/x-tf+xml:   A TextFeatures in XML format.
    *  <li> application/x-semdoc+xml: The semantic document format.
-   *  </ul>
+   * </ul>
    * <p>
    * Appending "+gz" to the mime will return a result in gzip format (RFC1951, RFC1952).
    * In addition to the reduced size, this format includes a CRC-32 that ensures
@@ -76,7 +76,7 @@ public class DisambiguateRequest extends RequestBase {
    * See https://www.idilia.com/developer/sense-analysis/concepts/sense-analysis-recipes
    * for possible values.
    * 
-   * @param recipeKey
+   * @param recipeKey value for the processing recipe to use
    */
   public final void setDisambiguationRecipe(String recipeKey) {
     this.disambiguationRecipe = recipeKey;
@@ -103,7 +103,7 @@ public class DisambiguateRequest extends RequestBase {
    *  When using an AWS S3 bucket, the bucket must be writable by the account
    *  operating the servers. Please refer to our web site for our account number.
    *  
-   *  @param resultURI
+   *  @param resultURI uri for the storing the asynchronous result
    */
   public final void setResultURI(String resultURI) {
     this.resultURI = resultURI;
@@ -124,7 +124,7 @@ public class DisambiguateRequest extends RequestBase {
    *  at the @resultURI except that it does not contain the actual disambiguation
    *  result.
    *  
-   *  @param notificationURI
+   *  @param notificationURI uri to notify
    *  
    */
 
@@ -139,7 +139,7 @@ public class DisambiguateRequest extends RequestBase {
    * The input document is tokenized and truncated to the next nearest paragraph
    * boundary with this number of tokens.
    * 
-   * @param maxTokens
+   * @param maxTokens maximum tokens to process
    */
   public final void setMaxTokens(int maxTokens) {
     this.maxTokens = maxTokens;
@@ -153,7 +153,7 @@ public class DisambiguateRequest extends RequestBase {
    * includes the text and its mime. The mime must have been set to a valid
    * mime + character set.
    * 
-   * @param attachment
+   * @param attachment document to process
    */
   public final void setAttachment(FormBodyPart attachment) {
     this.attachments.add(attachment);
@@ -183,7 +183,7 @@ public class DisambiguateRequest extends RequestBase {
    * computation time exceeds this limit, the request aborts immediately and 
    * returns HTTP 504. Useful for real-time applications.
    * 
-   * @param timeout
+   * @param timeout hundreds of seconds
    */
   public void setTimeout(Integer timeout) {
     this.timeout = timeout;
@@ -213,10 +213,6 @@ public class DisambiguateRequest extends RequestBase {
   }
   
   
-  /**
-   * Returns the request path for the appropriate REST method on the server.
-   * @return request path.
-   */
   final public String requestPath() {
     return new String("/1/text/disambiguate.mpjson");
   }
@@ -244,7 +240,6 @@ public class DisambiguateRequest extends RequestBase {
     parms.add(new BasicNameValuePair("maxTokens", Integer.toString(maxTokens)));
   }
   
-  // Return the content to sign when creating the authentication information
   final public byte[] toSign() throws IOException {
     int totalBodyLen = 0;
     for (FormBodyPart attachment: attachments) {

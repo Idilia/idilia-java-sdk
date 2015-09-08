@@ -170,24 +170,16 @@ public class ParaphraseResponse extends ResponseBase {
    */
   public ParaphraseResponse() {}
 
-  /**
-   * Creates an object with an error condition. Normally not used by application code.
-   *
-   * @param status status
-   * @param errorMsg error message
-   */
-  public ParaphraseResponse(int status, String errorMsg) {
-    super(status, errorMsg);
-  }
   
   /**
    * Recreate from JSON stream
    *
-   * @throws JsonParseException
-   * @throws JsonProcessingException
-   * @throws IOException
+   * @param  JsonParser positioned at the start of this object
+   * @throws JsonParseException when failing to parse the JSON
+   * @throws JsonProcessingException when failing to parse the JSON
+   * @throws IOException when failing to parse the JSON
    */
-  public ParaphraseResponse(JsonParser jp) throws JsonParseException, JsonProcessingException, IOException {
+  ParaphraseResponse(JsonParser jp) throws JsonParseException, JsonProcessingException, IOException {
     while (jp.nextToken() != JsonToken.END_OBJECT) {
       char c = jp.getTextCharacters()[jp.getTextOffset()];
       jp.nextToken();

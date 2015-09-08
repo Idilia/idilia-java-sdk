@@ -1,6 +1,3 @@
-/*
- * Definition for elements returned by properties "neInfo" and "neInfos"
- */
 package com.idilia.services.kb.objects;
 
 import java.io.IOException;
@@ -10,6 +7,9 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
+/**
+ * Definition for elements returned by properties "neInfo" and "neInfos"
+ */
 public class NeInfo {
   private String neT;
   private String neST;
@@ -28,12 +28,21 @@ public class NeInfo {
     }
   }
   
+  /**
+   * The value for property NE (named entity) type (neT).
+   * @return string value for the sensekey used to identify the NE type
+   */
   public String getNeT() {
     return neT;
   }
   public void setNeT(String neT) {
     this.neT = neT;
   }
+  
+  /**
+   * The value for property NE (named entity) subtype (neST).
+   * @return string value for the sensekey used to identify the NE subtype
+   */
   public String getNeST() {
     return neST;
   }

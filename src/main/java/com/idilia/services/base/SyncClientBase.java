@@ -44,6 +44,7 @@ public class SyncClientBase extends ClientBase implements Closeable {
    * <p>
    * This method can be overriden to provide a client with different options.
    * The client built gets an extra interceptor to add the credentials headers.
+   * @return a builder for the HTTP clients instantiated.
    */
   protected static HttpClientBuilder defaultClientBuilder() {
     return HttpClients
@@ -72,7 +73,11 @@ public class SyncClientBase extends ClientBase implements Closeable {
   }
 
   
-  /** Helper function to return the response */
+  /** Helper function to return the response
+   * @param req the request to issue
+   * @return a response to an API request
+   * @throws IdiliaClientException on any error encountered 
+   */
   protected CloseableHttpResponse getServerResponse(RequestBase req) throws IdiliaClientException {
     HttpPost httpPost = createPost(req);
     HttpClientContext ctxt = HttpClientContext.create();

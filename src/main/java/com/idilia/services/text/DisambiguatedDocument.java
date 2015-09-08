@@ -29,19 +29,22 @@ public class DisambiguatedDocument {
    }
   
   /**
-   * Returns the resultMime. Matches the same field in the request.
+   * Returns the resultMime. Matches the same field in the request. E.g., application/x-semdoc+xml
+   * @return the result mime of the document
    */
   
   public String getResultMime() { return this.resultMime; }
   
   /**
-   * Returns the encoding of the document.
+   * Returns the encoding of the document. E.g., gzip.
+   * @return the encoding of the document
    */
   public String getEncoding() { return this.encoding; }
   
   /**
    * Return the content of the result as a stream.
-   * @throws IOException 
+   * @return an input stream with the decoded (if applicable) content of the disambiguated document
+   * @throws IOException when the input stream cannot be extracted
    */
   public InputStream getInputStream() throws IOException {
     InputStream i = this.getEncodedInputStream();
@@ -51,7 +54,8 @@ public class DisambiguatedDocument {
   
   /**
    * Return the content of the result as a the raw stream which is possibly encoded.
-   * @throws IOException 
+   * @return an inputstream with the raw document returned by the text server.
+   * @throws IOException when the input stream cannot be extracted
    */
   public InputStream getEncodedInputStream() throws IOException {
     if (bytes == null)

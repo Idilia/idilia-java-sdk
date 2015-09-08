@@ -14,6 +14,8 @@ import java.util.regex.Pattern;
  * <p>
  * The markup inserted is in the form:
  *   {@code <span data-idl-fsk="dog/N1">dogs</span>}
+ * <p>
+ * Instances of this class are created using the {@link AprioriTaggerBuilder}
  */
 public class AprioriTagger {
 

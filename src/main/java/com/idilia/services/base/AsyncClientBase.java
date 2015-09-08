@@ -78,6 +78,8 @@ public class AsyncClientBase extends ClientBase implements Closeable {
      * Decode the entity in the HTTP response and store in member #resp.
      * If the response is not successfull, the implementation must throw to interrupt
      * asynchronous completion stages.
+     * @param result the result to decode
+     * @return a decoded Response object
      * @throws IdiliaClientException when the response is not a success and processing of an asynchronous 
      *   chain that relies on the response has to be interrupted.
      * @throws Exception Handler is allowed to throw any exception it wants and this class will wrap it

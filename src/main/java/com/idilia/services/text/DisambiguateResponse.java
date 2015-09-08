@@ -17,20 +17,23 @@ public class DisambiguateResponse extends ResponseBase {
 
   /**
    * Store the annotated document received in the server's response. Normally not used by application code.
+   * @param document recovered
    */
-  public final void addResult(DisambiguatedDocument r) {
+  final void addResult(DisambiguatedDocument r) {
     this.results.add(r);
   }
   
   /**
-   * Return the result
+   * Return the result when the request included a single document to process.
+   * @return document recovered
    */
   public final DisambiguatedDocument getResult() {
     return results.get(results.size() - 1);
   }
   
   /**
-   * Return all the results
+   * Return the results for all the documents requested.
+   * @return all documents recovered
    */
   public final ArrayList<DisambiguatedDocument> getResults() {
     return results;
@@ -39,14 +42,7 @@ public class DisambiguateResponse extends ResponseBase {
   /**
    * Creates an empty object. Normally not used by application code.
    */
-  public DisambiguateResponse() {}
+  DisambiguateResponse() {}
 
-  /**
-   * Creates an object with an error condition. Normally not used by application code.
-   */
-  public DisambiguateResponse(int status, String errorMsg) {
-    super(status, errorMsg);
-  }
-  
   private ArrayList<DisambiguatedDocument> results = new ArrayList<DisambiguatedDocument>();
 }

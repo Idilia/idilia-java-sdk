@@ -21,7 +21,34 @@ import com.idilia.services.base.IdiliaClientException;
 import com.idilia.services.base.RequestBase;
 
 /**
- * Class for encoding the query request.
+ * Class for encoding the kb/query request.
+ * 
+ * A request is best performed by defining a class with the expected result. This
+ * class also serves as the template for the query. E.g.,
+ * <pre>
+ * {@code
+ *   static class FskInfo {
+ *     // List of public fields for JSON recovery. Can include nested objects as well.
+ *     public String fsk;
+ *     public ArrayList<String> children;
+ *     public ArrayList<String> parents;
+ *     public NeInfo neInfo;
+ *     
+ *     // Method to generate an object that will JSON serialize to the correct query form.
+ *     static FskInfo query(String fsk) {
+ *       FskInfo res = new FskInfo();
+ *       res.fsk = fsk;
+ *       res.children = Collections.emptyList(); // Must not be null because server expects an array
+ *       res.parents = Collections.emptyList();  // same
+ *       return res;
+ *     }
+ *   }
+ *   
+ *   QueryRequest q = new QueryRequest(Collections.singletonList(FskInfo.query("dog/N1")));
+ *   QueryResponse r = kbClient.query(q, FskInfo.class);
+ *   FskInfo fi = r.getResult().get(0);
+ * }
+ * </pre>
  */
 public class QueryRequest extends RequestBase {
 
@@ -29,10 +56,20 @@ public class QueryRequest extends RequestBase {
   public QueryRequest() {
   }
   
+  /**
+   * Constructor with pre-formatted query string.
+   * @param query A string with the JSON template expected by the server.
+   */
   public QueryRequest(String query) {
     setQuery(query);
   }
   
+  /**
+   * Construct specifying the objects to transmit as requests.
+   * @param qrys iterables with objects to encode as the request.
+   * @throws IdiliaClientException when the iterable collection cannot be serialized to a JSON string.
+   * @see #setQuery(Iterable)
+   */
   public QueryRequest(Iterable<? extends Object> qrys) throws IdiliaClientException {
     setQuery(qrys);
   }
@@ -50,6 +87,14 @@ public class QueryRequest extends RequestBase {
   }
   
   
+  /**
+   * Specifies the query to transmit as a series of objects, each one representing one
+   * expected result. The response will include the result for each in the same order.
+   * The objects should be of the same type to allow JSON recovery to a user specified POJO class.
+   * Otherwise recovery will be to a generic Object.
+   * @param qrys iterable with the objects to encode.
+   * @throws IdiliaClientException if the given objects cannot be converted to a JSON string
+   */
   public void setQuery(Iterable<? extends Object> qrys) throws IdiliaClientException {
     try {
       query = new ObjectMapper().writeValueAsBytes(qrys);
@@ -59,19 +104,11 @@ public class QueryRequest extends RequestBase {
   }
   
 
-  // Return the name of the REST path used when accessing the server
-  /**
-   * Returns the request path for the REST method on the server.
-   * @return request path.
-   */
   @Override
   final public String requestPath() {
     return new String("/1/kb/query.json");
   }
   
-  
-  //
-  // Protected and abstract methods for the subclasses to implement
   
   @Override
   protected void getHttpQueryParms(List<NameValuePair> parms) throws IdiliaClientException {
@@ -86,7 +123,7 @@ public class QueryRequest extends RequestBase {
     parms.add(new BasicNameValuePair("query", new String(query, StandardCharsets.UTF_8)));
   }
   
-  // Return the content to sign when creating the authentication information
+  /** Return the content to sign when creating the authentication information */
   final public byte[] toSign() throws IOException {
     return query;
   }

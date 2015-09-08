@@ -27,6 +27,7 @@ public class IdiliaClientException extends RuntimeException {
    * Return the error returned by the server. When this object is not null,
    * the properties getStatus() and getErrorMsg() return the details on
    * the error encountered.
+   * @return error returned by the server or null when server was not reached.
    */
   public ResponseBase getApiResponse() {
     return this.apiResponse;

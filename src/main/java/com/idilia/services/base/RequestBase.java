@@ -87,6 +87,7 @@ public abstract class RequestBase {
    * authentication. Must be provided by the subclass.
    * 
    * @return byte[] Bytes to sign
+   * @throws IOException when the appropriate elements in the message content cannot be converted to a byte array for signature.
    */
   abstract public byte[] toSign() throws IOException;
 

@@ -48,7 +48,7 @@ public class AsyncClient extends AsyncClientBase
    * This is a lightweight object. Allocated instances share an underlying HTTP client.
    * Multithread safe.
    * <p>
-   * @param creds Idilia API credentials
+   * @param creds Idilia API credentials for a project
    */
   public AsyncClient(IdiliaCredentials creds) {
     this(creds, defaultApiUrl);
@@ -60,7 +60,7 @@ public class AsyncClient extends AsyncClientBase
    * This is a lightweight object. Allocated instances share an underlying HTTP client.
    * Multithread safe.
    * <p>
-   * @param creds Idilia API credentials
+   * @param creds Idilia API credentials for a project
    * @param url URL to reach the Idilia API
    */
   public AsyncClient(IdiliaCredentials creds, URL url) {

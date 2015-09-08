@@ -1,20 +1,30 @@
-/*
- * Definition of root element "extRef"
- */
 package com.idilia.services.kb.objects;
 
 import java.util.Objects;
 
+/*
+ * Definition of root element "extRef".
+ */
 public class ExtRef {
-  private String dm;   // the domain
-  private String ref;  // the unique identifier within the domain
+  private String dm;
+  private String ref;
 
+  /**
+   * The domain for the external reference. E.g., wikipedia
+   * @return string value for the domain of the external reference
+   */
   public String getDm() {
     return dm;
   }
+  
   public void setDm(String dm) {
     this.dm = dm;
   }
+  
+  /**
+   * The unique reference value within the domain.
+   * @return string value for the unique reference within the domain
+   */
   public String getRef() {
     return ref;
   }
