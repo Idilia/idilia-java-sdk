@@ -54,7 +54,7 @@ public class AprioriTagger {
         continue;
       String surf = ci ? sns.getText().toLowerCase() : sns.getText();
       /* Bit of a dirty hook here to prevent disrupting the existing
-       * <span data-idl-fsk="ina"><span> that are present in the input.
+       * <span data-idl-fsk="ina"></span> that are present in the input.
        * We just don't allow tagging any word that is either of span or ina.
        * The others (data, idl, fsk) don't matter because we don't retag when
        * hyphen bounded.
@@ -148,8 +148,6 @@ public class AprioriTagger {
       /* Insert the markup */
       if (fsk != null) {
         resSb.append("<span data-idl-fsk=\"").append(fsk);
-        if (!skRe.matcher(fsk).matches())
-          resSb.append("/_UNK_");
         resSb.append("\">");
         resSb.append(matcher.group(0));
         resSb.append("</span>");
@@ -160,5 +158,5 @@ public class AprioriTagger {
     return resSb.toString();
   }
   
-  static private final Pattern skRe = Pattern.compile("^([^\\s]+)\\/([NJVD])(\\d{1,4})$");
+  static private final Pattern skRe = Pattern.compile("^([^\\s]+)\\/([NJVD])(\\d{1,4}|_WC_|_UNK_|_INA_)$");
 }
