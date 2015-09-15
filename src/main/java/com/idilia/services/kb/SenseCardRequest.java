@@ -45,6 +45,14 @@ public class SenseCardRequest extends RequestBase {
   }
   
   /**
+   * Return the template value requested. Normally something like "image_v3".
+   * @return name of the template
+   */
+  public String getTemplate() {
+    return this.tmplt;
+  }
+
+  /**
    * The number of tokens spanned in the text is an attribute of a card in a tagging menu.
    * This parameter can be set to obtain a card suitable for insertion into a menu. Normally
    * used with a template starting with "menu_".

@@ -2,6 +2,7 @@ package com.idilia.services.kb;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -82,6 +83,26 @@ public class SenseMenuRequest extends MenuRequest {
     return text.getBytes();
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof SenseMenuRequest)) return false;
+    SenseMenuRequest other = (SenseMenuRequest) o;
+    return
+        Objects.equals(text, other.text) &&
+        Objects.equals(selectedFsk, other.selectedFsk) &&
+        super.equals(other);
+  }
+  
+  @Override
+  public String toString() {
+    return text;
+  }
+  
+  @Override
+  public int hashCode() {
+    return text.hashCode();
+  }
+  
   private String text;
   private String selectedFsk;
 }

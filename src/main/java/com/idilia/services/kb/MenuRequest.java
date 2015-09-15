@@ -1,6 +1,7 @@
 package com.idilia.services.kb;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -97,6 +98,14 @@ public abstract class MenuRequest extends RequestBase {
     this.tmplt = t;
     return this;
   }
+  
+  /**
+   * Return the template value requested. Normally something like "image_v3".
+   * @return name of the template
+   */
+  public String getTemplate() {
+    return this.tmplt;
+  }
 
   @Override
   protected void getHttpQueryParms(List<NameValuePair> parms) throws IdiliaClientException {
@@ -116,6 +125,21 @@ public abstract class MenuRequest extends RequestBase {
       parms.add(new BasicNameValuePair("addCreateSense", addCreateSense));
     super.getHttpQueryParms(parms);
   }
+  
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof MenuRequest)) return false;
+    MenuRequest other = (MenuRequest) o;
+    return 
+        Objects.equals(fskInfos, other.fskInfos) &&
+        Objects.equals(filters, other.filters) &&
+        Objects.equals(collapsing, other.collapsing) &&
+        Objects.equals(tmplt, other.tmplt) &&
+        Objects.equals(addAnySense, other.addAnySense) &&
+        Objects.equals(addCreateSense, other.addCreateSense) &&
+        true;
+  }
+  
   
   // Policy elements
   private String fskInfos;
