@@ -1,8 +1,6 @@
 package com.idilia.services.kb;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
@@ -29,19 +27,18 @@ public class AsyncClientTest extends TestBase {
       final int numReqs = 10;
       final CountDownLatch counter = new CountDownLatch(numReqs);
       for (int i = 0; i < numReqs; ++i) {
-        final QueryRequest req = defaultRequest();
+        final QueryRequest req = new QueryRequest(KbQuery.build("Montreal/N1"));
         req.setRequestId("testing-services-kb-"
             + (new Random()).nextInt(1000));
-        CompletableFuture<QueryResponse> future = client.queryAsync(req, QueryResult.class);
+        CompletableFuture<QueryResponse<KbQuery>> future = client.queryAsync(req, KbQuery.class);
         future.whenComplete((response, ex) -> {
           try {
             if (ex != null) {
               logger_.error("encountered exception", ex);
               failed.set(true);
             } else {
-              for (Object rObj : response.getResult()) {
-                QueryResult r = (QueryResult) rObj;
-                failed.set(failed.get() || r.getDefinition().isEmpty());
+              for (KbQuery r : response.getResult()) {
+                failed.set(failed.get() || r.definition.isEmpty());
               }
             }
           } catch (Exception e) {
@@ -57,17 +54,5 @@ public class AsyncClientTest extends TestBase {
       Assert.assertFalse(failed.get());
     } finally {
     }
-  }
-
-  
-  static QueryRequest defaultRequest() {
-    QueryRequest req = new QueryRequest();
-    ArrayList<Object> qrys = new ArrayList<Object>();
-    LinkedHashMap<String, Object> qry = new LinkedHashMap<String, Object>();
-    qry.put("fs", "Montreal/N1");
-    qry.put("definition", null);
-    qrys.add(qry);
-    req.setQuery(qrys);
-    return req;
   }
 }
