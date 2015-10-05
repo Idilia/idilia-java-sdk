@@ -71,7 +71,7 @@ public class Client extends SyncClientBase {
    * @return {@link QueryResponse}
    * @throws IdiliaClientException when the request is not successful for any reason
    */
-  public QueryResponse query(QueryRequest req) throws IdiliaClientException {
+  public QueryResponse<Object> query(QueryRequest req) throws IdiliaClientException {
     return query(req, Object.class);
   }
   
@@ -86,11 +86,11 @@ public class Client extends SyncClientBase {
    * @return {@link QueryResponse}
    * @throws IdiliaClientException when the request is not successful for any reason
    */
-  public <T> QueryResponse query(QueryRequest req, Class<T> tpRef) throws IdiliaClientException {
+  public <T> QueryResponse<T> query(QueryRequest req, Class<T> tpRef) throws IdiliaClientException {
     try (CloseableHttpResponse httpResponse = getServerResponse(req)) {
     
       // Recover the response.
-      QueryResponse resp = QueryCodec.decode(jsonMapper_, tpRef, httpResponse.getEntity());
+      QueryResponse<T> resp = QueryCodec.decode(jsonMapper_, tpRef, httpResponse.getEntity());
       if (resp.getStatus() != HttpURLConnection.HTTP_OK)
         throw new IdiliaClientException(resp);
       return resp;

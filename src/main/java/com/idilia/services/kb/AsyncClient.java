@@ -60,7 +60,7 @@ public class AsyncClient extends AsyncClientBase {
    * @return a CompletableFuture set when the response is available
    * @throws IdiliaClientException wrapping the actual exception encountered
    */
-  public <T> CompletableFuture<QueryResponse> queryAsync(QueryRequest req, Class<T> tpRef) throws IdiliaClientException {
+  public <T> CompletableFuture<QueryResponse<T>> queryAsync(QueryRequest req, Class<T> tpRef) throws IdiliaClientException {
 
     final HttpPost httppost = createPost(req);
     final HttpClientContext ctxt = HttpClientContext.create();
@@ -70,25 +70,25 @@ public class AsyncClient extends AsyncClientBase {
       throw new IdiliaClientException(e);
     }
 
-    final CompletableFuture<QueryResponse> future = new CompletableFuture<>();
+    final CompletableFuture<QueryResponse<T>> future = new CompletableFuture<>();
     getClient().execute(httppost, ctxt, new QueryCB<T>(tpRef, future));
     return future;
   }
 
 
   /** The callback for decoding a kb/query response. Adds a constructor parameter for the recovery type */
-  private class QueryCB<T> extends HttpCallback<QueryResponse> {
+  private class QueryCB<T> extends HttpCallback<QueryResponse<T>> {
 
     final private Class<T> tpRef;
 
-    public QueryCB(Class<T> tpRef, CompletableFuture<QueryResponse> future) { 
+    public QueryCB(Class<T> tpRef, CompletableFuture<QueryResponse<T>> future) { 
       super(future);
       this.tpRef = tpRef;
     }
 
-    public QueryResponse completedHdlr(HttpResponse httpResponse) throws IdiliaClientException, JsonParseException, UnsupportedOperationException, IOException {
+    public QueryResponse<T> completedHdlr(HttpResponse httpResponse) throws IdiliaClientException, JsonParseException, UnsupportedOperationException, IOException {
 
-      QueryResponse resp = QueryCodec.decode(jsonMapper_, tpRef, httpResponse.getEntity());
+      QueryResponse<T> resp = QueryCodec.decode(jsonMapper_, tpRef, httpResponse.getEntity());
       if (resp.getStatus() != HttpURLConnection.HTTP_OK)
         throw new IdiliaClientException(resp);
       return resp;

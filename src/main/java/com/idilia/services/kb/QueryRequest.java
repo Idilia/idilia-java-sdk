@@ -10,6 +10,7 @@ package com.idilia.services.kb;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.http.NameValuePair;
@@ -45,7 +46,7 @@ import com.idilia.services.base.RequestBase;
  *   }
  *   
  *   QueryRequest q = new QueryRequest(Collections.singletonList(FskInfo.query("dog/N1")));
- *   QueryResponse r = kbClient.query(q, FskInfo.class);
+ *   QueryResponse<FskInfo> r = kbClient.query(q, FskInfo.class);
  *   FskInfo fi = r.getResult().get(0);
  * }
  * </pre>
@@ -72,6 +73,16 @@ public class QueryRequest extends RequestBase {
    */
   public QueryRequest(Iterable<? extends Object> qrys) throws IdiliaClientException {
     setQuery(qrys);
+  }
+  
+  /**
+   * Construct specifying the object to transmit as a request.
+   * @param qry object to encode as the request.
+   * @throws IdiliaClientException when the object cannot be serialized to a JSON string.
+   * @see #setQuery(Iterable)
+   */
+  public QueryRequest(Object qry) throws IdiliaClientException {
+    setQuery(Collections.singletonList(qry));
   }
   
   /**

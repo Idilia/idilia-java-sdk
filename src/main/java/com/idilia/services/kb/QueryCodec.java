@@ -11,9 +11,9 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.idilia.services.base.IdiliaClientException;
 
-class QueryCodec<T> {
+class QueryCodec {
 
-  static <T> QueryResponse decode(
+  static <T> QueryResponse<T> decode(
       ObjectMapper jsonMapper, Class<T> tpRef,
       HttpEntity rxEntity) throws IdiliaClientException, JsonParseException, UnsupportedOperationException, IOException {
     
@@ -22,7 +22,7 @@ class QueryCodec<T> {
       throw new IdiliaClientException("Unexpected mime type from server: " + ct);
 
     // Parse the JSON response where we cast the "result" member into the supplied Result
-    QueryResponse resp = new QueryResponse();
+    QueryResponse<T> resp = new QueryResponse<T>();
     JsonParser jp = jsonMapper.getFactory().createParser(rxEntity.getContent());
     jp.nextToken(); // skip object boundary
     while (jp.nextToken() != JsonToken.END_OBJECT) {
@@ -37,7 +37,7 @@ class QueryCodec<T> {
       else if (fieldName.contentEquals("result"))
       {
         jp.nextToken(); // skip over array start
-        resp.setResult(new ArrayList<Object>());
+        resp.setResult(new ArrayList<>());
         while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
           T r = (T) jp.readValueAs(tpRef);
           resp.addResult(r);

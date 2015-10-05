@@ -13,7 +13,7 @@ import com.idilia.services.base.ResponseBase;
  * Response from the KnowledgeBase server for a QueryRequest.
  *
  */
-public class QueryResponse extends ResponseBase {
+public class QueryResponse<T extends Object> extends ResponseBase {
 
   
   /**
@@ -24,7 +24,7 @@ public class QueryResponse extends ResponseBase {
    *          object can be casted to the POJO type specified in 
    *          Client#query(QueryRequest, Class&lt;T&gt;)
    */
-  public final ArrayList<Object> getResult() {
+  public final ArrayList<T> getResult() {
     return this.result;
   }
   
@@ -33,7 +33,7 @@ public class QueryResponse extends ResponseBase {
    * Store the query results received in the server's response. Normally not used by application code.
    * @param result the recovered objects
    */
-  void setResult(ArrayList<Object> result) {
+  void setResult(ArrayList<T> result) {
     this.result = result;
   }
   
@@ -41,7 +41,7 @@ public class QueryResponse extends ResponseBase {
    * Adds a query results received in the server's response. Normally not used by application code.
    * @param result a recovered object
    */
-  void addResult(Object result) {
+  void addResult(T result) {
     this.result.add(result);
   }
 
@@ -50,5 +50,5 @@ public class QueryResponse extends ResponseBase {
    */
   QueryResponse() {}
 
-  private ArrayList<Object> result;
+  private ArrayList<T> result;
 }
