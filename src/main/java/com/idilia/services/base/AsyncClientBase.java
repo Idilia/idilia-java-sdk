@@ -8,6 +8,7 @@
 package com.idilia.services.base;
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 
@@ -112,6 +113,18 @@ public class AsyncClientBase extends ClientBase implements Closeable {
   @Override
   public void close() {
     /* We're not really closable because we use a static CloseableHttpAsyncClient. */
+  }
+  
+  /**
+   * Stop the internal static HTTP asynchronous client.
+   * <p>
+   * This should be done at program exit to terminate its thread pool.
+   */
+  static public void stop() {
+    try {
+      httpClient_.close();
+    } catch (IOException ioe) {
+    }
   }
   
   /**
