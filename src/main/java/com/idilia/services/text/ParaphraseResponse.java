@@ -22,12 +22,67 @@ import com.idilia.services.base.ResponseBase;
 public class ParaphraseResponse extends ResponseBase {
 
   /**
+   * Document a sense used in a paraphrase and its location in the paraphrase's text.
+   */
+  public static class Sense {
+    private int start;
+    private int end;
+    private String fsk;
+    
+    /**
+     * Recreate from JSON stream
+     */
+    Sense(JsonParser jp) throws JsonParseException, IOException {
+      while (jp.nextToken() != JsonToken.END_OBJECT) {
+        char c = jp.getTextCharacters()[jp.getTextOffset()];
+        jp.nextToken();
+        if (c == 's')
+          start = jp.getValueAsInt();
+        else if (c == 'e')
+          end = jp.getValueAsInt();
+        else if (c == 'f')
+          fsk = jp.getText();
+      }
+    }
+
+    /**
+     * Return the start offset of the sense in {@link Paraphrase.getText}.
+     */
+    public final int getStart() {
+      return start;
+    }
+
+    /**
+     * Return the one past the offset of the last character for the sense in {@link Paraphrase.getText}.
+     */
+    public final int getEnd() {
+      return end;
+    }
+
+    /**
+     * Return the string of the sense present in the paraphrase in the range returned by {@link #getStart}
+     * and {@link #getEnd}.
+     */
+    public final String getFsk() {
+      return fsk;
+    }
+    
+    @Override
+    public String toString() {
+      return fsk;
+    }
+  }
+  
+  
+  /**
    * Class to represent one paraphrase
    */
   public static class Paraphrase {
+    private String text;
     private String surface;
     private double weight = 0.0;
     private String transformations = "";
+    private ArrayList<Sense> senses = new ArrayList<>();
     
     /**
      * Recreate from JSON stream
@@ -35,8 +90,16 @@ public class ParaphraseResponse extends ResponseBase {
     Paraphrase(JsonParser jp) throws JsonParseException, IOException {
       while (jp.nextToken() != JsonToken.END_OBJECT) {
         char c = jp.getTextCharacters()[jp.getTextOffset()];
+        char c2 = jp.getTextCharacters()[jp.getTextOffset()+1];
         jp.nextToken(); // move to value or end object
-        if (c == 's')
+        if (c == 't' && c2 == 'e')
+          text = jp.getText();
+        else if (c == 's' && c2 == 'e')  {
+          while (jp.nextToken() != JsonToken.END_ARRAY)
+            senses.add(new Sense(jp));
+          senses.trimToSize();
+        }
+        else if (c == 's')
           surface = jp.getText();
         else if (c == 'w')
           weight = jp.getValueAsDouble();
@@ -45,16 +108,27 @@ public class ParaphraseResponse extends ResponseBase {
       }
     }
     
-    public void setSurface(String s) { surface = s; }
-    public void setWeight(double w) { weight = w;  }
-    public void setTransformations(String t) { transformations = t; }
+    /**
+     * Text of the paraphrase. Unlike {@link #getSurface}, the compounds
+     * used during the generation are not quoted.
+     * 
+     * @return plain text for the paraphrase.
+     */
+    public String getText() {
+      return text;
+    }
     
     /**
-     * Text of the paraphrase. May be senses or words
+     * Text of the paraphrase. Where the paraphrase was generated from a compound
+     * sense, the text of the compound is quoted. This is useful when 
+     * using the paraphrase with a search engine to keep the compound words
+     * collocated.
      *
-     * @return paraphrase text
+     * @return paraphrase text with quoted compounds
      */
-    public String getSurface() { return surface; }
+    public String getSurface() {
+      return surface;
+    }
     
     /**
      * Weight of the paraphrase. Original query has weight == 1 and
@@ -63,14 +137,26 @@ public class ParaphraseResponse extends ResponseBase {
      *
      * @return paraphrase weight
      */
-    public double getWeight() { return weight; }
+    public double getWeight() {
+      return weight;
+    }
     
     /**
      * Comma separated list of transformations applied to yield the paraphrase
      *
      * @return comma separated list of transformations
      */
-    public String getTransformations() { return transformations; }
+    public String getTransformations() {
+      return transformations;
+    }
+    
+    /**
+     * Return the senses that were used to generate the paraphrase. They are sorted
+     * in increasing start offset.
+     */
+    public List<Sense> getSenses() {
+      return senses;
+    }
   }
   
   

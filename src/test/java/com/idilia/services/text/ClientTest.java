@@ -35,14 +35,17 @@ public class ClientTest extends TestBase {
     // Perform a REST request to the paraphrase server
     try (Client client = new Client(getDefaultCreds(), Configuration.INSTANCE.getParaphraseApiUrl())) {
       ParaphraseRequest req = new ParaphraseRequest();
-      req.setText("my testing query", "text/query", StandardCharsets.UTF_8);
+      req.setText("testing query", "text/query", StandardCharsets.UTF_8);
       req.setRequestId("testing-services-para-" + (new Random()).nextInt(1000));
       req.setWsdMime("application/x-semdoc+xml");
 
       ParaphraseResponse response = client.paraphrase(req);
       Assert.assertTrue(response.getErrorMsg() == null);
       Assert.assertTrue(response.getParaphrases().size() > 1);
-      
+      Assert.assertFalse(response.getParaphrases().get(0).getSenses().isEmpty());
+      Assert.assertEquals(0, response.getParaphrases().get(0).getSenses().get(0).getStart());      
+      Assert.assertTrue(response.getParaphrases().get(0).getSenses().get(0).getEnd() > 0);
+      Assert.assertFalse(response.getParaphrases().get(0).getSenses().get(0).getFsk().isEmpty());
       InputStream is = response.getWsdResult().getInputStream();
      
       Scanner scanner = new Scanner(is);
