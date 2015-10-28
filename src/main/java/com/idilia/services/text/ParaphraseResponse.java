@@ -46,14 +46,18 @@ public class ParaphraseResponse extends ResponseBase {
     }
 
     /**
-     * Return the start offset of the sense in {@link Paraphrase.getText}.
+     * Return the start offset of the sense in {@link Paraphrase#getText}.
+     *
+     * @return start offset
      */
     public final int getStart() {
       return start;
     }
 
     /**
-     * Return the one past the offset of the last character for the sense in {@link Paraphrase.getText}.
+     * Return the one past the offset of the last character for the sense in {@link Paraphrase#getText}.
+     *
+     * @return one past the last character offset
      */
     public final int getEnd() {
       return end;
@@ -62,6 +66,8 @@ public class ParaphraseResponse extends ResponseBase {
     /**
      * Return the string of the sense present in the paraphrase in the range returned by {@link #getStart}
      * and {@link #getEnd}.
+     *
+     * @return sense key
      */
     public final String getFsk() {
       return fsk;
@@ -153,6 +159,8 @@ public class ParaphraseResponse extends ResponseBase {
     /**
      * Return the senses that were used to generate the paraphrase. They are sorted
      * in increasing start offset.
+     *
+     * @return senses list
      */
     public List<Sense> getSenses() {
       return senses;
