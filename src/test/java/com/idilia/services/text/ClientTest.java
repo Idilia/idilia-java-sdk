@@ -46,6 +46,7 @@ public class ClientTest extends TestBase {
       Assert.assertEquals(0, response.getParaphrases().get(0).getSenses().get(0).getStart());      
       Assert.assertTrue(response.getParaphrases().get(0).getSenses().get(0).getEnd() > 0);
       Assert.assertFalse(response.getParaphrases().get(0).getSenses().get(0).getFsk().isEmpty());
+      Assert.assertFalse(response.getParaphrases().get(0).getSenses().get(0).getFs().isEmpty());
       InputStream is = response.getWsdResult().getInputStream();
      
       Scanner scanner = new Scanner(is);
