@@ -28,20 +28,23 @@ public class ParaphraseResponse extends ResponseBase {
     private int start;
     private int end;
     private String fsk;
+    private String fs;
     
     /**
      * Recreate from JSON stream
      */
     Sense(JsonParser jp) throws JsonParseException, IOException {
       while (jp.nextToken() != JsonToken.END_OBJECT) {
-        char c = jp.getTextCharacters()[jp.getTextOffset()];
+        String name = jp.getText();
         jp.nextToken();
-        if (c == 's')
+        if (name.contentEquals("start"))
           start = jp.getValueAsInt();
-        else if (c == 'e')
+        else if (name.contentEquals("end"))
           end = jp.getValueAsInt();
-        else if (c == 'f')
+        else if (name.contentEquals("fsk"))
           fsk = jp.getText();
+        else if (name.contentEquals("fs"))
+          fs = jp.getText();
       }
     }
 
@@ -64,13 +67,21 @@ public class ParaphraseResponse extends ResponseBase {
     }
 
     /**
-     * Return the string of the sense present in the paraphrase in the range returned by {@link #getStart}
+     * Return the string of the sense key present in the paraphrase in the range returned by {@link #getStart}
      * and {@link #getEnd}.
      *
      * @return sense key
      */
     public final String getFsk() {
       return fsk;
+    }
+    
+    /**
+     * Return the string of the sense id present in the paraphrase in the range returned by {@link #getStart}
+     * and {@link #getEnd}.
+     */
+    public final String getFs() {
+      return fs;
     }
     
     @Override
