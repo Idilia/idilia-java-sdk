@@ -5,11 +5,13 @@
 package com.idilia.services.base;
 
 import com.idilia.services.kb.QueryRequest;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * Response from the KnowledgeBase server.
  *
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ResponseBase {
 
   /**

@@ -1,8 +1,10 @@
 package com.idilia.services.text;
 
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import com.idilia.services.base.ResponseBase;
+
 
 /**
  * Response from the matching/eval API.
@@ -11,6 +13,16 @@ import com.idilia.services.base.ResponseBase;
 public class MatchingEvalResponse extends ResponseBase {
 
   private List<Integer> result;
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  static class SkModelStatus {
+    public String sk;
+    public Integer code;
+    public String desc;
+    public Boolean used;
+  }
+
+  private List<SkModelStatus> skModelStatuses;
   
   /**
    * Creates an empty object. Normally not used by application code.
@@ -48,4 +60,34 @@ public class MatchingEvalResponse extends ResponseBase {
     this.result = result;
   }
 
+  /**
+   * Obtain the sense key model status (SkModelStatus) for each sk in the request
+   * expression.
+   * <p>
+   * For each sense key, the model status is composed of:
+   * <ul>
+   *   <li> sk: sense key for which the model status applies
+   *   <li> code, desc: integer and description for the status
+   *    0 Ok
+   *    1 No Counter Examples
+   *    2 Very Likely
+   *    3 Very Unlikely
+   *    4 Counter Examples Only
+   *    5 Sparse
+   *   <li> used: boolean indicating if the model is being used at all. If not,
+   *        presence of the query string is enough
+   * </ul>
+   * <p>
+   * @return SkModelStatus for each sk in the expression
+   */
+  public List<SkModelStatus> getSkModelStatuses() {
+    return skModelStatuses;
+  }
+
+  /**
+   * @param skModelStatuses the skModelStatuses to set
+   */
+  void setSkModelStatuses(List<SkModelStatus> skModelStatuses) {
+    this.skModelStatuses = skModelStatuses;
+  }
 }

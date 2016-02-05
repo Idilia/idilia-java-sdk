@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.idilia.services.base.ResponseBase;
 
 
@@ -79,6 +80,8 @@ public class ParaphraseResponse extends ResponseBase {
     /**
      * Return the string of the sense id present in the paraphrase in the range returned by {@link #getStart}
      * and {@link #getEnd}.
+     *
+     * $@return fine sense
      */
     public final String getFs() {
       return fs;
@@ -182,6 +185,7 @@ public class ParaphraseResponse extends ResponseBase {
   /** 
    * Class to represent the query confidence
    */
+  @JsonIgnoreProperties(ignoreUnknown = true)
   public static class QueryConfidence {
     
     /**
