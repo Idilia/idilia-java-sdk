@@ -12,22 +12,27 @@ import com.idilia.services.base.ResponseBase;
 public class MatchingEvalResponse extends ResponseBase {
 
   /**
-   * Describes the model status for a sensekey in the match expression.
-   * <li>code, desc: integer and description for the status
-   * <li>used: true when the keyword's sensekey was used by the matching
-   * service. When false, matching was performed using the keyword's text.
-   * </ul>
+   * Describes the matching model status for a sensekey in the match expression.
    */
   @JsonIgnoreProperties(ignoreUnknown = true)
   static public class SkModelStatus {
 
     /**
-     * Return the sensekey for which this status applies.
+     * Return the sensekey in the search expression for which this status applies.
      * <p>
      * @return sensekey of the status.
      */
     public final String getFsk() {
       return fsk;
+    }
+    
+    /**
+     * Return the text in the search expression for which this status applies.
+     * <p>
+     * @return text fragment of the search expression.
+     */
+    public final String getText() {
+      return text;
     }
 
     /**
@@ -58,15 +63,16 @@ public class MatchingEvalResponse extends ResponseBase {
 
     /**
      * Return whether the sensekey was used when matching. When false, matching
-     * was performed using the keyword.
+     * was performed using the text.
      * <p>
-     * @return true if matching used the keyword's sense
+     * @return true if matching used the sensekey
      */
     public final Boolean wasUsed() {
       return used;
     }
 
     public String fsk;
+    public String text;
     public Integer code;
     public String desc;
     public Boolean used;
