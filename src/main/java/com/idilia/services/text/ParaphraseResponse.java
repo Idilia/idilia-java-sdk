@@ -81,7 +81,7 @@ public class ParaphraseResponse extends ResponseBase {
      * Return the string of the sense id present in the paraphrase in the range returned by {@link #getStart}
      * and {@link #getEnd}.
      *
-     * $@return fine sense
+     * @return fine sense
      */
     public final String getFs() {
       return fs;
