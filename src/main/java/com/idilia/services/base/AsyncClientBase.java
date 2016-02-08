@@ -91,7 +91,10 @@ public class AsyncClientBase extends ClientBase implements Closeable {
     @Override
     public void completed(HttpResponse result) {
       try {
-        future_.complete(completedHdlr(result));
+        if (result.getEntity() == null)
+          future_.completeExceptionally(new IdiliaClientException("Unexpected null response from server"));
+        else
+          future_.complete(completedHdlr(result));
       } catch (IdiliaClientException ice) {
         future_.completeExceptionally(ice);
       } catch (Exception e) {

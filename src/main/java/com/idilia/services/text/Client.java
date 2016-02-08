@@ -93,10 +93,6 @@ public class Client extends SyncClientBase
     
       // Recover the response. It can be a single part or multipart
       HttpEntity rxEntity = httpResponse.getEntity();
-      
-      if (rxEntity == null)
-        throw new IdiliaClientException("Did not received a response from the server");
-      
       DisambiguateResponse resp = DisambiguateCodec.decode(jsonMapper_, rxEntity);
       if (resp.getStatus() != HttpURLConnection.HTTP_OK && resp.getStatus() != HttpURLConnection.HTTP_ACCEPTED)
         throw new IdiliaClientException(resp);
@@ -124,9 +120,6 @@ public class Client extends SyncClientBase
 
       // Recover the response. It can be a single part or multipart
       HttpEntity rxEntity = httpResponse.getEntity();
-      if (rxEntity == null)
-        throw new IdiliaClientException("Did not received a response from the server");
-      
       ParaphraseResponse resp = ParaphraseCodec.decode(jsonMapper_, rxEntity);
       if (resp.getStatus() != HttpURLConnection.HTTP_OK && resp.getStatus() != HttpURLConnection.HTTP_ACCEPTED)
         throw new IdiliaClientException(resp);
@@ -154,9 +147,6 @@ public class Client extends SyncClientBase
 
       // Recover the response. It can be a single part or multipart
       HttpEntity rxEntity = httpResponse.getEntity();
-      if (rxEntity == null)
-        throw new IdiliaClientException("Did not received a response from the server");
-      
       MatchResponse resp = MatchCodec.decodeMatchResponse(jsonMapper_, rxEntity);
       if (resp.getStatus() != HttpURLConnection.HTTP_OK && resp.getStatus() != HttpURLConnection.HTTP_ACCEPTED)
         throw new IdiliaClientException(resp);
@@ -184,10 +174,7 @@ public class Client extends SyncClientBase
 
       // Recover the response. It can be a single part or multipart
       HttpEntity rxEntity = httpResponse.getEntity();
-      if (rxEntity == null)
-        throw new IdiliaClientException("Did not received a response from the server");
-      
-      MatchingEvalResponse resp = MatchingEvalCodec.decode(jsonMapper_, httpResponse.getEntity());
+      MatchingEvalResponse resp = MatchingEvalCodec.decode(jsonMapper_, rxEntity);
       if (resp.getStatus() != HttpURLConnection.HTTP_OK)
         throw new IdiliaClientException(resp);
       return resp;

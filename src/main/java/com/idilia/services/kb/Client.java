@@ -111,9 +111,6 @@ public class Client extends SyncClientBase {
     
       // Recover the response.
       HttpEntity rxEntity = httpResponse.getEntity();
-      if (rxEntity == null)
-        throw new IdiliaClientException("Did not received a response from the server");
-      
       String ct = rxEntity.getContentType().getValue();
       if (!ct.startsWith("application/json"))
         throw new IdiliaClientException("Unexpected content type");
@@ -139,9 +136,6 @@ public class Client extends SyncClientBase {
     
       // Recover the response.
       HttpEntity rxEntity = httpResponse.getEntity();
-      if (rxEntity == null)
-        throw new IdiliaClientException("Did not received a response from the server");
-      
       String ct = rxEntity.getContentType().getValue();
       if (!ct.startsWith("application/json"))
         throw new IdiliaClientException("Unexpected content type");
@@ -168,9 +162,6 @@ public class Client extends SyncClientBase {
       
       // Recover the response.
       HttpEntity rxEntity = httpResponse.getEntity();
-      if (rxEntity == null)
-        throw new IdiliaClientException("Did not received a response from the server");
-      
       String ct = rxEntity.getContentType().getValue();
       if (!ct.startsWith("application/json"))
         throw new IdiliaClientException("Unexpected content type: " + ct);

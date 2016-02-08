@@ -83,7 +83,13 @@ public class SyncClientBase extends ClientBase implements Closeable {
     HttpClientContext ctxt = HttpClientContext.create();
     try {
       sign(ctxt, req.requestPath(), req.toSign());
-      return getClient().execute(httpPost, ctxt);
+      CloseableHttpResponse resp = getClient().execute(httpPost, ctxt);
+      
+      if (resp.getEntity() == null)
+        throw new IdiliaClientException("Unexpected null response from server");
+      
+      return resp;
+
     } catch (IOException e) {
       throw new IdiliaClientException(e);
     }
