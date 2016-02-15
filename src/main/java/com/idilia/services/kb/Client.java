@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 
@@ -111,9 +112,13 @@ public class Client extends SyncClientBase {
     
       // Recover the response.
       HttpEntity rxEntity = httpResponse.getEntity();
-      String ct = rxEntity.getContentType().getValue();
+      Header ctHdr = rxEntity.getContentType();
+      if (ctHdr == null)
+        throw new IdiliaClientException("Unexpected no content type");
+      
+      String ct = ctHdr.getValue();
       if (!ct.startsWith("application/json"))
-        throw new IdiliaClientException("Unexpected content type");
+        throw new IdiliaClientException("Unexpected content type: " + ct);
   
       SenseMenuResponse resp = jsonMapper_.readValue(rxEntity.getContent(), SenseMenuResponse.class);
       if (resp.getStatus() != HttpURLConnection.HTTP_OK)
@@ -136,9 +141,13 @@ public class Client extends SyncClientBase {
     
       // Recover the response.
       HttpEntity rxEntity = httpResponse.getEntity();
-      String ct = rxEntity.getContentType().getValue();
+      Header ctHdr = rxEntity.getContentType();
+      if (ctHdr == null)
+        throw new IdiliaClientException("Unexpected no content type");
+      
+      String ct = ctHdr.getValue();
       if (!ct.startsWith("application/json"))
-        throw new IdiliaClientException("Unexpected content type");
+        throw new IdiliaClientException("Unexpected content type: " + ct);
   
       TaggingMenuResponse resp = jsonMapper_.readValue(rxEntity.getContent(), TaggingMenuResponse.class);
       if (resp.getStatus() != HttpURLConnection.HTTP_OK)
@@ -162,7 +171,11 @@ public class Client extends SyncClientBase {
       
       // Recover the response.
       HttpEntity rxEntity = httpResponse.getEntity();
-      String ct = rxEntity.getContentType().getValue();
+      Header ctHdr = rxEntity.getContentType();
+      if (ctHdr == null)
+        throw new IdiliaClientException("Unexpected no content type");
+      
+      String ct = ctHdr.getValue();
       if (!ct.startsWith("application/json"))
         throw new IdiliaClientException("Unexpected content type: " + ct);
   

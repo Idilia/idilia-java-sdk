@@ -15,6 +15,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.util.EntityUtils;
 
@@ -30,7 +31,12 @@ class DisambiguateCodec {
     if (rxEntity == null)
       throw new IdiliaClientException("Did not received a response from the server");
     
-    String ct = rxEntity.getContentType().getValue();
+    Header ctHdr = rxEntity.getContentType();
+    if (ctHdr == null)
+      throw new IdiliaClientException("Unexpected no content type");
+    
+    String ct = ctHdr.getValue();
+
     if (ct.startsWith("application/json")) {
       // Single part json message.
       JsonParser jp = jsonMapper.getFactory().createParser(rxEntity.getContent());

@@ -5,6 +5,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.HttpClientContext;
@@ -121,15 +122,18 @@ public class AsyncClient extends AsyncClientBase {
     getClient().execute(httppost, ctxt, new HttpCallback<SenseMenuResponse>(future) {
       @Override
       public SenseMenuResponse completedHdlr(HttpResponse result) throws IdiliaClientException, JsonParseException, JsonMappingException, UnsupportedOperationException, IOException {
-        String ct = result.getEntity().getContentType().getValue();
-        if (!ct.startsWith("application/json")) {
+        Header ctHdr = result.getEntity().getContentType();
+        if (ctHdr == null)
+          throw new IdiliaClientException("Unexpected no content type");
+        
+        String ct = ctHdr.getValue();
+        if (!ct.startsWith("application/json"))
           throw new IdiliaClientException("Unexpected content type: " + ct);
-        } else {
-          SenseMenuResponse resp = jsonMapper_.readValue(result.getEntity().getContent(), SenseMenuResponse.class);
-          if (resp.getStatus() != HttpURLConnection.HTTP_OK)
-            throw new IdiliaClientException(resp);
-          return resp;
-        }
+          
+        SenseMenuResponse resp = jsonMapper_.readValue(result.getEntity().getContent(), SenseMenuResponse.class);
+        if (resp.getStatus() != HttpURLConnection.HTTP_OK)
+          throw new IdiliaClientException(resp);
+        return resp;
       }
     });
 
@@ -161,15 +165,18 @@ public class AsyncClient extends AsyncClientBase {
     getClient().execute(httpPost, ctxt, new HttpCallback<TaggingMenuResponse>(future) {
       @Override
       public TaggingMenuResponse completedHdlr(HttpResponse result) throws IdiliaClientException, JsonParseException, JsonMappingException, UnsupportedOperationException, IOException {
-        String ct = result.getEntity().getContentType().getValue();
-        if (!ct.startsWith("application/json")) {
+        Header ctHdr = result.getEntity().getContentType();
+        if (ctHdr == null)
+          throw new IdiliaClientException("Unexpected no content type");
+        
+        String ct = ctHdr.getValue();
+        if (!ct.startsWith("application/json"))
           throw new IdiliaClientException("Unexpected content type: " + ct);
-        } else {
-          TaggingMenuResponse resp = jsonMapper_.readValue(result.getEntity().getContent(), TaggingMenuResponse.class);
-          if (resp.getStatus() != HttpURLConnection.HTTP_OK)
-            throw new IdiliaClientException(resp);
-          return resp;
-        }
+
+        TaggingMenuResponse resp = jsonMapper_.readValue(result.getEntity().getContent(), TaggingMenuResponse.class);
+        if (resp.getStatus() != HttpURLConnection.HTTP_OK)
+          throw new IdiliaClientException(resp);
+        return resp;
       }
     });
 
@@ -201,15 +208,18 @@ public class AsyncClient extends AsyncClientBase {
     getClient().execute(httppost, ctxt, new HttpCallback<SenseCardResponse>(future) {
       @Override
       public SenseCardResponse completedHdlr(HttpResponse result) throws IdiliaClientException, JsonParseException, JsonMappingException, UnsupportedOperationException, IOException {
-        String ct = result.getEntity().getContentType().getValue();
-        if (!ct.startsWith("application/json")) {
+        Header ctHdr = result.getEntity().getContentType();
+        if (ctHdr == null)
+          throw new IdiliaClientException("Unexpected no content type");
+        
+        String ct = ctHdr.getValue();
+        if (!ct.startsWith("application/json"))
           throw new IdiliaClientException("Unexpected content type: " + ct);
-        } else {
-          SenseCardResponse resp = jsonMapper_.readValue(result.getEntity().getContent(), SenseCardResponse.class);
-          if (resp.getStatus() != HttpURLConnection.HTTP_OK)
-            throw new IdiliaClientException(resp);
-          return resp;
-        }
+          
+        SenseCardResponse resp = jsonMapper_.readValue(result.getEntity().getContent(), SenseCardResponse.class);
+        if (resp.getStatus() != HttpURLConnection.HTTP_OK)
+          throw new IdiliaClientException(resp);
+        return resp;
       }
     });
 

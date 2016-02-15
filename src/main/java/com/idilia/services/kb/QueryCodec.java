@@ -3,6 +3,7 @@ package com.idilia.services.kb;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -17,9 +18,13 @@ class QueryCodec {
       ObjectMapper jsonMapper, Class<T> tpRef,
       HttpEntity rxEntity) throws IdiliaClientException, JsonParseException, UnsupportedOperationException, IOException {
     
-    String ct = rxEntity.getContentType().getValue();
+    Header ctHdr = rxEntity.getContentType();
+    if (ctHdr == null)
+      throw new IdiliaClientException("Unexpected no content type");
+    
+    String ct = ctHdr.getValue();
     if (!ct.startsWith("application/json"))
-      throw new IdiliaClientException("Unexpected mime type from server: " + ct);
+      throw new IdiliaClientException("Unexpected content type: " + ct);
 
     // Parse the JSON response where we cast the "result" member into the supplied Result
     QueryResponse<T> resp = new QueryResponse<T>();

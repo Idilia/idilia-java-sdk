@@ -2,6 +2,7 @@ package com.idilia.services.text;
 
 import java.io.IOException;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -18,7 +19,11 @@ class MatchingEvalCodec {
     if (rxEntity == null)
       throw new IdiliaClientException("Did not received a response from the server");
     
-    String ct = rxEntity.getContentType().getValue();
+    Header ctHdr = rxEntity.getContentType();
+    if (ctHdr == null)
+      throw new IdiliaClientException("Unexpected no content type");
+    
+    String ct = ctHdr.getValue();
     if (ct.startsWith("application/json"))
     {
       // Single part json message.
