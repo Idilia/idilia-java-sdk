@@ -66,39 +66,80 @@ public class AsyncClientTest extends TestBase {
       final AtomicBoolean failed = new AtomicBoolean(false);
       final int numReqs = 10;
 
-      final CountDownLatch counter = new CountDownLatch(numReqs);
-      for (int i = 0; i < numReqs; ++i) {
-        MatchingEvalRequest req = new MatchingEvalRequest();
-        req.setDocuments(Arrays.asList("I love to do the laundry with tide.", "tide", "The tide was high when he was at the beach"));
-        req.setRequestId("testing-services-match-" + (new Random()).nextInt(1000));
-        req.setExpression(Collections.singletonList(new Sense(0, 1, "tide", "Tide/N8")));
+      {
+        final CountDownLatch counter = new CountDownLatch(numReqs);
+        for (int i = 0; i < numReqs; ++i) {
+          MatchingEvalRequest req = new MatchingEvalRequest();
+          req.setDocuments(Arrays.asList("I love to do the laundry with tide.", "tide", "high", "detergent", "The tide was high when he was at the beach"));
+          req.setRequestId("testing-services-match-" + (new Random()).nextInt(1000));
+          req.setExpression(Collections.singletonList(new Sense(0, 1, "tide", "Tide/N8")));
 
-        CompletableFuture<MatchingEvalResponse> future = client.matchingEvalAsync(req);
-        future.whenComplete((response, ex) -> {
-          try {
-            if (ex != null) {
-              logger_.error("encountered exception", ex);
+          CompletableFuture<MatchingEvalResponse> future = client.matchingEvalAsync(req);
+          future.whenComplete((response, ex) -> {
+            try {
+              if (ex != null) {
+                logger_.error("encountered exception", ex);
+                failed.set(true);
+              } else  {
+                failed.set(failed.get() || 
+                    response.getResult() == null || 
+                    response.getResult().size() != 5 || 
+                    response.getResult().get(0) <= 0 || 
+                    response.getResult().get(1) != 0 || 
+                    response.getResult().get(2) >= 0 || 
+                    response.getResult().get(3) >= 0 || 
+                    response.getResult().get(4) >= 0 );
+              }
+            } catch (Exception e) {
+              logger_.error("Caught exception", e);
+              Assert.assertTrue(false);
               failed.set(true);
-            } else  {
-              failed.set(failed.get() || 
-                  response.getResult() == null || 
-                  response.getResult().size() != 3 || 
-                  response.getResult().get(0) <= 0 || 
-                  response.getResult().get(1) != 0 || 
-                  response.getResult().get(2) >= 0 );
+            } finally {
+              counter.countDown();
             }
-          } catch (Exception e) {
-            logger_.error("Caught exception", e);
-            Assert.assertTrue(false);
-            failed.set(true);
-          } finally {
-            counter.countDown();
-          }
-        });
+          });
+        }
+        counter.await();
+        Assert.assertFalse(failed.get());
       }
-      
-      counter.await();
-      Assert.assertFalse(failed.get());
+
+      {
+        final CountDownLatch counter = new CountDownLatch(numReqs);
+        for (int i = 0; i < numReqs; ++i) {
+          MatchingEvalRequest req = new MatchingEvalRequest();
+          req.setDocuments(Arrays.asList("I love to do the laundry with tide.", "tide", "high", "detergent", "The tide was high when he was at the beach"));
+          req.setRequestId("testing-services-match-" + (new Random()).nextInt(1000));
+          req.setExpression(Collections.singletonList(new Sense(0, 1, "tide", "Tide/N8")));
+          req.setRequireTerm(MatchingEvalRequest.RequireTerm.no);
+        
+          CompletableFuture<MatchingEvalResponse> future = client.matchingEvalAsync(req);
+          future.whenComplete((response, ex) -> {
+            try {
+              if (ex != null) {
+                logger_.error("encountered exception", ex);
+                failed.set(true);
+              } else  {
+                failed.set(failed.get() || 
+                    response.getResult() == null || 
+                    response.getResult().size() != 5 || 
+                    response.getResult().get(0) <= 0 || 
+                    response.getResult().get(1) != 0 || 
+                    response.getResult().get(2) >= 0 || 
+                    response.getResult().get(3) <= 0 || 
+                    response.getResult().get(4) >= 0 );
+              }
+            } catch (Exception e) {
+              logger_.error("Caught exception", e);
+              Assert.assertTrue(false);
+              failed.set(true);
+            } finally {
+              counter.countDown();
+            }
+          });
+        }
+        counter.await();
+        Assert.assertFalse(failed.get());
+      }
 
     } finally {
     }

@@ -38,12 +38,12 @@ public class MatchingEvalResponse extends ResponseBase {
     /**
      * Return numeric code for the status.
      * <ul>
-     * <li>0 Ok
-     * <li>1 No Counter Examples
-     * <li>2 Very Likely
-     * <li>3 Very Unlikely
-     * <li>4 Counter Examples Only
-     * <li>5 Sparse
+     * <li>1 Ok
+     * <li>2 No Counter Examples
+     * <li>3 Very Likely
+     * <li>4 Very Unlikely
+     * <li>5 Counter Examples Only
+     * <li>6 Sparse
      * </ul>
      * <p>
      * @return numeric code for the status.
@@ -126,11 +126,11 @@ public class MatchingEvalResponse extends ResponseBase {
   }
 
   /**
-   * Obtain the sense key model status (SkModelStatus) for each sensekey in the
+   * Obtain the sense key model status (SkModelStatus) for each (text,sensekey) pair in the
    * request expression.
    * <p>
    * 
-   * @return SkModelStatus for each sensekey in the matching expression
+   * @return SkModelStatus for each (text,sensekey) pair in the matching expression
    */
   public List<SkModelStatus> getSkModelStatuses() {
     return skModelStatuses;

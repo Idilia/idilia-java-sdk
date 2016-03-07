@@ -47,6 +47,13 @@ public class MatchingEvalRequest extends RequestBase {
     }
   }
   
+  /**
+   * Specify matching behavior when the search term is not present in the provided document.
+   * @param val
+   */
+  public void setRequireTerm(RequireTerm val) {
+    this.requireTerm = val;
+  }
 
   /**
    * Set the list of documents to evaluate.
@@ -60,14 +67,6 @@ public class MatchingEvalRequest extends RequestBase {
     } catch (JsonProcessingException e) {
       throw new IdiliaClientException(e);
     }
-  }
-  
-  /**
-   * Specify matching behavior when the search term is not present in the provided document.
-   * @param val
-   */
-  public void setRequireTerm(RequireTerm val) {
-    this.requireTerm = val;
   }
   
   @Override
@@ -84,13 +83,13 @@ public class MatchingEvalRequest extends RequestBase {
   protected void getHttpQueryParms(List<NameValuePair> parms) throws IdiliaClientException {
     super.getHttpQueryParms(parms);
     parms.add(new BasicNameValuePair("expression", expression));
-    parms.add(new BasicNameValuePair("documents", documents));
     if (requireTerm != null)
       parms.add(new BasicNameValuePair("requireTerm", requireTerm.toString()));
+    parms.add(new BasicNameValuePair("documents", documents));
   }
   
   private String expression;
-  private String documents;
   private RequireTerm requireTerm;
+  private String documents;
   static private final ObjectMapper jsonMapper = new ObjectMapper();
 }
