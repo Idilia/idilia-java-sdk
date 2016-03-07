@@ -18,10 +18,18 @@ import com.idilia.tagging.Sense;
  */
 public class MatchingEvalRequest extends RequestBase {
 
-  private String expression;
-  private String documents;
+  /** Value for parameter requireTerm */
+  public enum RequireTerm {
+    /** Rejects documents where search terms are not all present. */
+    yes,
+    
+    /** Rejects documents where search terms are not present only if the search expression includes "or" clauses. */
+    onDisjunction,
+    
+    /** Do not consider whether the search terms are present. */
+    no,
+  }
   
-
   /**
    * Set the match expression words and their meaning.
    * <p>
@@ -53,7 +61,15 @@ public class MatchingEvalRequest extends RequestBase {
       throw new IdiliaClientException(e);
     }
   }
-
+  
+  /**
+   * Specify matching behavior when the search term is not present in the provided document.
+   * @param val
+   */
+  public void setRequireTerm(RequireTerm val) {
+    this.requireTerm = val;
+  }
+  
   @Override
   public byte[] toSign() throws IOException {
     return expression.getBytes();
@@ -69,7 +85,12 @@ public class MatchingEvalRequest extends RequestBase {
     super.getHttpQueryParms(parms);
     parms.add(new BasicNameValuePair("expression", expression));
     parms.add(new BasicNameValuePair("documents", documents));
+    if (requireTerm != null)
+      parms.add(new BasicNameValuePair("requireTerm", requireTerm.toString()));
   }
   
+  private String expression;
+  private String documents;
+  private RequireTerm requireTerm;
   static private final ObjectMapper jsonMapper = new ObjectMapper();
 }
