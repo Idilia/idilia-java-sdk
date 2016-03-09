@@ -46,7 +46,7 @@
     <httpasyncclient.version>4.1</httpasyncclient.version>
     <log4j.version>1.2.17</log4j.version>
     <commonsio.version>2.4</commonsio.version>
-    <commonscollect.version>3.2.1</commonscollect.version>
+    <commonscollect.version>3.2.2</commonscollect.version>
   </properties>
 
   <dependencies>
