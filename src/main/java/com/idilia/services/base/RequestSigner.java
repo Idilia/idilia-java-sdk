@@ -8,10 +8,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -48,10 +48,7 @@ class RequestSigner implements HttpRequestInterceptor {
         .getAttribute("idlSignData");
 
     // Format a date as per RFC 2616
-    final Date now = new Date();
-    final DateFormat dateFmt = new SimpleDateFormat(
-        "EEE, dd MMM yyyy HH:mm:ss z");
-    dateFmt.setTimeZone(TimeZone.getTimeZone("GMT"));
+    ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
     final String dateS = dateFmt.format(now);
 
     String toSign = dateS + signData.signTail;
@@ -76,4 +73,6 @@ class RequestSigner implements HttpRequestInterceptor {
     // Add the authentication headers
     request.setHeader("Date", dateS);
   }
+  
+  static private DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss z").withLocale(Locale.ENGLISH);
 }
