@@ -108,7 +108,7 @@ public class QueryRequest extends RequestBase {
    */
   public void setQuery(Iterable<? extends Object> qrys) throws IdiliaClientException {
     try {
-      query = new ObjectMapper().writeValueAsBytes(qrys);
+      query = mapper.writeValueAsBytes(qrys);
     } catch (JsonProcessingException e) {
       throw new IdiliaClientException(e);
     }
@@ -160,4 +160,5 @@ public class QueryRequest extends RequestBase {
   }
   
   private byte[] query;
+  final static private ObjectMapper mapper = new ObjectMapper();
 }
