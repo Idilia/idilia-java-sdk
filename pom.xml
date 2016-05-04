@@ -3,7 +3,7 @@
 
   <groupId>com.idilia</groupId>
   <artifactId>idilia-java-sdk</artifactId>
-  <version>1.1.11</version>
+  <version>1.1.12-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>Idilia Java SDK</name>
@@ -32,7 +32,7 @@
     <connection>scm:git:http://github.com/Idilia/idilia-java-sdk</connection>
     <developerConnection>scm:git:http://github.com/Idilia/idilia-java-sdk</developerConnection>
     <url>https://github.com/Idilia/idilia-java-sdk</url>
-    <tag>idilia-java-sdk-1.1.11</tag>
+    <tag>idilia-java-sdk-1.1.4</tag>
   </scm>
 
   <properties>
