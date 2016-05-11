@@ -45,6 +45,13 @@ public class SenseCardRequest extends RequestBase {
   }
   
   /**
+   * Return the sensekey for the card.
+   */
+  public final String getFsk() {
+    return fsk;
+  }
+  
+  /**
    * Return the template value requested. Normally something like "image_v3".
    * @return name of the template
    */
