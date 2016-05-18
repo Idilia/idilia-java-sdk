@@ -46,6 +46,8 @@ public class ParaphraseResponse extends ResponseBase {
           fsk = jp.getText();
         else if (name.contentEquals("fs"))
           fs = jp.getText();
+        else
+          jp.skipChildren();
       }
     }
 
@@ -125,6 +127,8 @@ public class ParaphraseResponse extends ResponseBase {
           weight = jp.getValueAsDouble();
         else if (c == 't')
           transformations = jp.getText();
+        else
+          jp.skipChildren();
       }
     }
     
@@ -306,6 +310,8 @@ public class ParaphraseResponse extends ResponseBase {
         while (jp.nextToken() != JsonToken.END_ARRAY)
           paraphrases.add(new Paraphrase(jp));
         paraphrases.trimToSize();
+      } else {
+        jp.skipChildren();
       }
     }
   }

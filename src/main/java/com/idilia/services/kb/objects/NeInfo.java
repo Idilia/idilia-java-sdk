@@ -25,6 +25,8 @@ public class NeInfo {
         neT = jp.getText();
       else if (c == 'S')
         neST = jp.getText();
+      else
+        jp.skipChildren();
     }
   }
   
