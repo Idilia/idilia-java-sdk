@@ -48,6 +48,8 @@ class QueryCodec {
           resp.addResult(r);
           jp.nextToken(); // skip end of object
         }
+      } else {
+        jp.skipChildren();
       }
     }
 
