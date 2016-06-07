@@ -24,7 +24,7 @@ public class MatchingEvalRequest extends RequestBase {
     yes,
     
     /** Rejects documents where search terms are not present only if the search expression includes "or" clauses. */
-    onDisjunction,
+    onDisjunctionOnly,
     
     /** Do not consider whether the search terms are present. */
     no,

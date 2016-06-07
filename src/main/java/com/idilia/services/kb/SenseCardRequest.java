@@ -33,8 +33,8 @@ public class SenseCardRequest extends RequestBase {
   }
   
   /**
-   * Set the template for the card. Defaults to "image_v2". If the name of the template
-   * starts with "menu_" (e.g., menu_image_v2), the card returned is in the same
+   * Set the template for the card. Defaults to "image_v3". If the name of the template
+   * starts with "menu_" (e.g., menu_image_v3), the card returned is in the same
    * format as the cards in a sense menu. Otherwise the card use the large card format.
    * @param t template to use when generating the card
    * @return updated request object

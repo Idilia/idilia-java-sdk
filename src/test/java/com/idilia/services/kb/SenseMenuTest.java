@@ -67,5 +67,5 @@ public class SenseMenuTest extends TestBase {
     }
   }
 
-  static final String menuTmplt = "image_v2";
+  static final String menuTmplt = "image_v3";
 }

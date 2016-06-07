@@ -10,7 +10,7 @@ import com.idilia.services.base.TestBase;
 
 public class SenseCardTest extends TestBase  {
 
-  static final String cardTmplt = "image_v2";
+  static final String cardTmplt = "image_v3";
   
   protected URL getSvcUrl() {
     return Configuration.INSTANCE.getKbApiUrl();
