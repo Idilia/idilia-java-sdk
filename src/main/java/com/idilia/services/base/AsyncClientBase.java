@@ -13,6 +13,7 @@ import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
@@ -37,6 +38,7 @@ public class AsyncClientBase extends ClientBase implements Closeable {
   protected static HttpAsyncClientBuilder defaultClientBuilder() {
     return HttpAsyncClients
         .custom()
+        .addInterceptorLast(new GzipInterceptors.GzipRequestInterceptor())
         .setMaxConnPerRoute(maxConnectionsPerRoute)
         .setMaxConnTotal(maxConnections)
         .setDefaultRequestConfig(
@@ -91,6 +93,7 @@ public class AsyncClientBase extends ClientBase implements Closeable {
     @Override
     public void completed(HttpResponse result) {
       try {
+        gzipDecoder.process(result, null);
         if (result.getEntity() == null)
           future_.completeExceptionally(new IdiliaClientException("Unexpected null response from server"));
         else
@@ -140,5 +143,8 @@ public class AsyncClientBase extends ClientBase implements Closeable {
         .build();
     httpClient_.start();
   }
+  
+  /** Using an inline interceptor with the client does not work. Use it on the received response */
+  static HttpResponseInterceptor gzipDecoder = new GzipInterceptors.GzipResponseInterceptor();
 
 }

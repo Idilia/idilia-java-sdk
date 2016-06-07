@@ -172,7 +172,7 @@ public class AsyncClient extends AsyncClientBase {
         String ct = ctHdr.getValue();
         if (!ct.startsWith("application/json"))
           throw new IdiliaClientException("Unexpected content type: " + ct);
-
+        
         TaggingMenuResponse resp = jsonMapper_.readValue(result.getEntity().getContent(), TaggingMenuResponse.class);
         if (resp.getStatus() != HttpURLConnection.HTTP_OK)
           throw new IdiliaClientException(resp);

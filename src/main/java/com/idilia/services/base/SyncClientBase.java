@@ -49,6 +49,8 @@ public class SyncClientBase extends ClientBase implements Closeable {
   protected static HttpClientBuilder defaultClientBuilder() {
     return HttpClients
         .custom()
+        .addInterceptorLast(new GzipInterceptors.GzipRequestInterceptor())
+        .addInterceptorFirst(new GzipInterceptors.GzipResponseInterceptor())
         .setRetryHandler(retryHandler)
         .setMaxConnPerRoute(maxConnectionsPerRoute)
         .setMaxConnTotal(maxConnections)
