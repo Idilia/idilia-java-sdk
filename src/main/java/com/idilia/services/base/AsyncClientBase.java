@@ -145,6 +145,6 @@ public class AsyncClientBase extends ClientBase implements Closeable {
   }
   
   /** Using an inline interceptor with the client does not work. Use it on the received response */
-  static HttpResponseInterceptor gzipDecoder = new GzipInterceptors.GzipResponseInterceptor();
+  static protected HttpResponseInterceptor gzipDecoder = new GzipInterceptors.GzipResponseInterceptor();
 
 }
