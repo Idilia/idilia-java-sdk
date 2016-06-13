@@ -29,16 +29,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class ClientBase {
 
   /**
-   * Number of simultaneous requests per route allowed by the embedded
-   * HttpClient.
-   */
-  public static int maxConnectionsPerRoute = 100;
-
-  /**
    * Number of simultaneous requests allowed by the embedded HttpClient.
    */
-  public static int maxConnections = 100;
-
+  public static int maxConnections = 200;
   
   protected ClientBase(IdiliaCredentials creds, URL serviceUrl) {
     this.credentials = creds;
@@ -147,6 +140,7 @@ public class ClientBase {
   final protected static String HMAC_SHA_ALGORITHM = "HmacSHA256";
   final protected static ObjectMapper jsonMapper_ = new ObjectMapper();
   final protected static URL defaultApiUrl;
+  
   static {
     try {
       defaultApiUrl = new URL("http://api.idilia.com");

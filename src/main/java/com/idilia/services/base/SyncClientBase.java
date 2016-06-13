@@ -53,7 +53,7 @@ public class SyncClientBase extends ClientBase implements Closeable {
         .addInterceptorLast(new GzipInterceptors.GzipRequestInterceptor())
         .addInterceptorFirst(new GzipInterceptors.GzipResponseInterceptor())
         .setRetryHandler(retryHandler)
-        .setMaxConnPerRoute(maxConnectionsPerRoute)
+        .setMaxConnPerRoute(maxConnections)
         .setMaxConnTotal(maxConnections)
         .setDefaultRequestConfig(
             RequestConfig.custom()

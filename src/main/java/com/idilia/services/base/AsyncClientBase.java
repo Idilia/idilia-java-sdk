@@ -44,11 +44,19 @@ public class AsyncClientBase extends ClientBase implements Closeable {
    * @return HTTP default async client builder
    */
   protected static HttpAsyncClientBuilder defaultClientBuilder() {
+    
+    try {
+      DefaultConnectingIOReactor ioReactor = new DefaultConnectingIOReactor();
+      connMgr = new PoolingNHttpClientConnectionManager(ioReactor);
+      connMgr.setMaxTotal(maxConnections);
+      connMgr.setDefaultMaxPerRoute(maxConnections);
+    } catch (IOReactorException e) {
+    }
+    
     return HttpAsyncClients
         .custom()
         .addInterceptorLast(new GzipInterceptors.GzipRequestInterceptor())
-        .setMaxConnPerRoute(maxConnectionsPerRoute)
-        .setMaxConnTotal(maxConnections)
+        .setConnectionManager(connMgr)
         .setDefaultRequestConfig(
             RequestConfig.custom()
             .setSocketTimeout(3600 * 1000) // 1 hour
@@ -202,10 +210,18 @@ public class AsyncClientBase extends ClientBase implements Closeable {
   final private static CloseableHttpAsyncClient httpClient_;
   
   static {
+    /** Initialized the shared client */
     httpClient_ = defaultClientBuilder()
         .addInterceptorFirst(new RequestSigner())
         .build();
     httpClient_.start();
+    
+    /** Initialize connection cleanup */
+    if (connMgr != null) {
+      executor.scheduleAtFixedRate(() -> {
+        connMgr.closeExpiredConnections();
+      }, 30, 30, TimeUnit.SECONDS);
+    }
   }
   
   /** Using an inline interceptor with the client does not work. Use it on the received response */
