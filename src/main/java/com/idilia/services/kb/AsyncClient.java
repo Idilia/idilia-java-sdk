@@ -8,6 +8,7 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.HttpClientContext;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -63,7 +64,7 @@ public class AsyncClient extends AsyncClientBase {
    */
   public <T> CompletableFuture<QueryResponse<T>> queryAsync(QueryRequest req, Class<T> tpRef) throws IdiliaClientException {
 
-    final HttpPost httppost = createPost(req);
+    final HttpPost httpPost = createPost(req);
     final HttpClientContext ctxt = HttpClientContext.create();
     try {
       sign(ctxt, req.requestPath(), req.toSign());
@@ -72,7 +73,7 @@ public class AsyncClient extends AsyncClientBase {
     }
 
     final CompletableFuture<QueryResponse<T>> future = new CompletableFuture<>();
-    getClient().execute(httppost, ctxt, new QueryCB<T>(tpRef, future));
+    getClient().execute(httpPost, ctxt, new QueryCB<T>(tpRef, httpPost, ctxt, future));
     return future;
   }
 
@@ -82,8 +83,8 @@ public class AsyncClient extends AsyncClientBase {
 
     final private Class<T> tpRef;
 
-    public QueryCB(Class<T> tpRef, CompletableFuture<QueryResponse<T>> future) { 
-      super(future);
+    public QueryCB(Class<T> tpRef, HttpUriRequest request, HttpClientContext context, CompletableFuture<QueryResponse<T>> future) { 
+      super(request, context, future);
       this.tpRef = tpRef;
     }
 
@@ -110,7 +111,7 @@ public class AsyncClient extends AsyncClientBase {
    */
   public CompletableFuture<SenseMenuResponse> senseMenuAsync(SenseMenuRequest req) throws IdiliaClientException {
 
-    final HttpPost httppost = createPost(req);
+    final HttpPost httpPost = createPost(req);
     final HttpClientContext ctxt = HttpClientContext.create();
     try {
       sign(ctxt, req.requestPath(), req.toSign());
@@ -119,7 +120,7 @@ public class AsyncClient extends AsyncClientBase {
     }
 
     final CompletableFuture<SenseMenuResponse> future = new CompletableFuture<>();
-    getClient().execute(httppost, ctxt, new HttpCallback<SenseMenuResponse>(future) {
+    getClient().execute(httpPost, ctxt, new HttpCallback<SenseMenuResponse>(httpPost, ctxt, future) {
       @Override
       public SenseMenuResponse completedHdlr(HttpResponse result) throws IdiliaClientException, JsonParseException, JsonMappingException, UnsupportedOperationException, IOException {
         Header ctHdr = result.getEntity().getContentType();
@@ -162,7 +163,7 @@ public class AsyncClient extends AsyncClientBase {
     }
 
     final CompletableFuture<TaggingMenuResponse> future = new CompletableFuture<>();
-    getClient().execute(httpPost, ctxt, new HttpCallback<TaggingMenuResponse>(future) {
+    getClient().execute(httpPost, ctxt, new HttpCallback<TaggingMenuResponse>(httpPost, ctxt, future) {
       @Override
       public TaggingMenuResponse completedHdlr(HttpResponse result) throws IdiliaClientException, JsonParseException, JsonMappingException, UnsupportedOperationException, IOException {
         Header ctHdr = result.getEntity().getContentType();
@@ -196,7 +197,7 @@ public class AsyncClient extends AsyncClientBase {
    */
   public CompletableFuture<SenseCardResponse> senseCardAsync(SenseCardRequest req) throws IdiliaClientException {
 
-    final HttpPost httppost = createPost(req);
+    final HttpPost httpPost = createPost(req);
     final HttpClientContext ctxt = HttpClientContext.create();
     try {
       sign(ctxt, req.requestPath(), req.toSign());
@@ -205,7 +206,7 @@ public class AsyncClient extends AsyncClientBase {
     }
 
     final CompletableFuture<SenseCardResponse> future = new CompletableFuture<>();
-    getClient().execute(httppost, ctxt, new HttpCallback<SenseCardResponse>(future) {
+    getClient().execute(httpPost, ctxt, new HttpCallback<SenseCardResponse>(httpPost, ctxt, future) {
       @Override
       public SenseCardResponse completedHdlr(HttpResponse result) throws IdiliaClientException, JsonParseException, JsonMappingException, UnsupportedOperationException, IOException {
         Header ctHdr = result.getEntity().getContentType();

@@ -5,8 +5,8 @@
 package com.idilia.services.text;
 
 import java.util.ArrayList;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.idilia.services.base.ResponseBase;
 
 /**

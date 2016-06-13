@@ -18,6 +18,7 @@ import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -75,7 +76,7 @@ public class SyncClientBase extends ClientBase implements Closeable {
   }
 
   
-  /** Helper function to return the response
+  /** Helper function to return the response from an API request
    * @param req the request to issue
    * @return a response to an API request
    * @throws IdiliaClientException on any error encountered 
@@ -85,28 +86,53 @@ public class SyncClientBase extends ClientBase implements Closeable {
     HttpClientContext ctxt = HttpClientContext.create();
     try {
       sign(ctxt, req.requestPath(), req.toSign());
-      CloseableHttpResponse resp = getClient().execute(httpPost, ctxt);
-      
-      if (resp.getEntity() == null)
-        throw new IdiliaClientException("Unexpected null response from server");
-      
-      return resp;
+    } catch (IOException e) {
+      throw new IdiliaClientException(e);
+    }
+    return getServerResponse(httpPost, ctxt);
+  }
+  
+  /**
+   * Helper function to return a response from an Http request
+   * @param request http request to transmit
+   * @param ctxt http context for request
+   * @return received http response
+   * @throws IdiliaClientException on any error encountered
+   */
+  protected CloseableHttpResponse getServerResponse(HttpUriRequest request, HttpClientContext ctxt) throws IdiliaClientException {
+    try {
+      for (int retryCnt = 0; ; ) {
+        CloseableHttpResponse resp = getClient().execute(request, ctxt);
+        
+        if ((resp.getStatusLine().getStatusCode() >= 500) &&
+            retryHandler.retryRequest(null, ++retryCnt, ctxt))
+          continue;
+        
+        if (resp.getEntity() == null)
+          throw new IdiliaClientException("Unexpected null response from server");
+        
+        return resp;
+      }
 
     } catch (IOException e) {
       throw new IdiliaClientException(e);
     }
   }
+  
+  
 
   @Override
   public void close() {
     /* We're not really closable because we use a static CloseableHttpClient. */
   }
 
+  
+  /** A retry handler that pauses when overflowing with requests */
+  final protected static HttpRequestRetryHandler retryHandler = new SyncRetryHandler();
+  
   /** The internal HTTP client. */
   final private static CloseableHttpClient httpClient_ = 
       defaultClientBuilder()
         .addInterceptorFirst(new RequestSigner())
         .build();
-  
-  final protected static HttpRequestRetryHandler retryHandler = new RetryHandler();
 }

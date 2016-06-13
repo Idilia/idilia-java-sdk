@@ -4,8 +4,8 @@
 
 package com.idilia.services.base;
 
-import com.idilia.services.kb.QueryRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.idilia.services.kb.QueryRequest;
 
 /**
  * Response from the KnowledgeBase server.
