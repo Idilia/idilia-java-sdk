@@ -14,12 +14,12 @@
 package com.idilia.services.text;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.URL;
 
 import javax.mail.MessagingException;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.HttpClientContext;
@@ -81,6 +81,7 @@ public class Client extends SyncClientBase
    */
   public DisambiguateResponse disambiguate(DisambiguateRequest req) throws IdiliaClientException {
     
+    /* Create the request */
     final HttpPost httpPost = createMultipartPost(req);
     final HttpClientContext ctxt = HttpClientContext.create();
     try {
@@ -89,12 +90,12 @@ public class Client extends SyncClientBase
       throw new IdiliaClientException(ioe);
     }
     
-    try (CloseableHttpResponse httpResponse = getClient().execute(httpPost, ctxt)) {
-    
+    /* Get the response and decode it */
+    try (CloseableHttpResponse httpResponse = getServerResponse(httpPost, ctxt)) {
       // Recover the response. It can be a single part or multipart
       HttpEntity rxEntity = httpResponse.getEntity();
       DisambiguateResponse resp = DisambiguateCodec.decode(jsonMapper_, rxEntity);
-      if (resp.getStatus() != HttpURLConnection.HTTP_OK && resp.getStatus() != HttpURLConnection.HTTP_ACCEPTED)
+      if (resp.getStatus() != HttpStatus.SC_OK && resp.getStatus() != HttpStatus.SC_ACCEPTED)
         throw new IdiliaClientException(resp);
       return resp;
     } catch (IOException | UnsupportedOperationException | MessagingException e) {
@@ -121,7 +122,7 @@ public class Client extends SyncClientBase
       // Recover the response. It can be a single part or multipart
       HttpEntity rxEntity = httpResponse.getEntity();
       ParaphraseResponse resp = ParaphraseCodec.decode(jsonMapper_, rxEntity);
-      if (resp.getStatus() != HttpURLConnection.HTTP_OK && resp.getStatus() != HttpURLConnection.HTTP_ACCEPTED)
+      if (resp.getStatus() != HttpStatus.SC_OK && resp.getStatus() != HttpStatus.SC_ACCEPTED)
         throw new IdiliaClientException(resp);
       return resp;
     } catch (IOException | UnsupportedOperationException | MessagingException e) {
@@ -148,7 +149,7 @@ public class Client extends SyncClientBase
       // Recover the response. It can be a single part or multipart
       HttpEntity rxEntity = httpResponse.getEntity();
       MatchResponse resp = MatchCodec.decodeMatchResponse(jsonMapper_, rxEntity);
-      if (resp.getStatus() != HttpURLConnection.HTTP_OK && resp.getStatus() != HttpURLConnection.HTTP_ACCEPTED)
+      if (resp.getStatus() != HttpStatus.SC_OK && resp.getStatus() != HttpStatus.SC_ACCEPTED)
         throw new IdiliaClientException(resp);
       return resp;
     } catch (IOException | UnsupportedOperationException e) {
@@ -175,7 +176,7 @@ public class Client extends SyncClientBase
       // Recover the response. It can be a single part or multipart
       HttpEntity rxEntity = httpResponse.getEntity();
       MatchingEvalResponse resp = MatchingEvalCodec.decode(jsonMapper_, rxEntity);
-      if (resp.getStatus() != HttpURLConnection.HTTP_OK)
+      if (resp.getStatus() != HttpStatus.SC_OK)
         throw new IdiliaClientException(resp);
       return resp;
     } catch (IOException | UnsupportedOperationException e) {

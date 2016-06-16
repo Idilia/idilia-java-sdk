@@ -1,14 +1,14 @@
 package com.idilia.services.text;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.http.HttpStatus;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -23,38 +23,14 @@ public class AsyncClientTest extends TestBase {
   public void testMatch() throws InterruptedException {
     // Perform a REST request to the paraphrase server
     try (AsyncClient client = new AsyncClient(getDefaultCreds(), Configuration.INSTANCE.getMatchApiUrl())) {
-      final AtomicBoolean failed = new AtomicBoolean(false);
-      final int numReqs = 10;
+      MatchRequest req = new MatchRequest();
+      req.setText("I like my Tide detergent!", "text/tweet", StandardCharsets.UTF_8);
+      req.setRequestId("testing-services-match-" + (new Random()).nextInt(1000));
+      req.setWsdMime("application/x-semdoc+xml");
+      req.setFilter("[{\"fsk\":\"Tide/N8\",\"keywords\":{\"positive\":[\"detergent\"],\"negative\":[\"crimson\"]}},{\"fsk\":\"like/V3\",\"keywords\":{\"negative\":[\"is like\"]}}]");
 
-      final CountDownLatch counter = new CountDownLatch(numReqs);
-      for (int i = 0; i < numReqs; ++i) {
-        MatchRequest req = new MatchRequest();
-        req.setText("I like my Tide detergent!", "text/tweet", StandardCharsets.UTF_8);
-        req.setRequestId("testing-services-match-" + (new Random()).nextInt(1000));
-        req.setWsdMime("application/x-semdoc+xml");
-        req.setFilter("[{\"fsk\":\"Tide/N8\",\"keywords\":{\"positive\":[\"detergent\"],\"negative\":[\"crimson\"]}},{\"fsk\":\"like/V3\",\"keywords\":{\"negative\":[\"is like\"]}}]");
-
-        CompletableFuture<MatchResponse> future = client.matchAsync(req);
-        future.whenComplete((response, ex) -> {
-          try {
-            if (ex != null) {
-              logger_.error("encountered exception", ex);
-              failed.set(true);
-            } else {
-              failed.set(failed.get() || !response.result.match);
-            }
-          } catch (Exception e) {
-            logger_.error("Caught exception", e);
-            failed.set(true);
-            Assert.assertTrue(false);
-          } finally {
-            counter.countDown();
-          }
-        });
-      }
-      
-      counter.await();
-      Assert.assertFalse(failed.get());
+      MatchResponse response = client.matchAsync(req).join();
+      Assert.assertTrue(response.result.match);
     } finally {
     }
   }
@@ -63,174 +39,73 @@ public class AsyncClientTest extends TestBase {
   public void testMatchingEval() throws InterruptedException {
     // Perform a REST request to the paraphrase server
     try (AsyncClient client = new AsyncClient(getDefaultCreds(), Configuration.INSTANCE.getMatchApiUrl())) {
-      final AtomicBoolean failed = new AtomicBoolean(false);
-      final int numReqs = 10;
-
+      
       {
-        final CountDownLatch counter = new CountDownLatch(numReqs);
-        for (int i = 0; i < numReqs; ++i) {
-          MatchingEvalRequest req = new MatchingEvalRequest();
-          req.setDocuments(Arrays.asList("I love to do the laundry with tide.", "tide", "high", "detergent", "The tide was high when he was at the beach"));
-          req.setRequestId("testing-services-match-" + (new Random()).nextInt(1000));
-          req.setExpression(Collections.singletonList(new Sense(0, 1, "tide", "Tide/N8")));
+        MatchingEvalRequest req = new MatchingEvalRequest();
+        req.setDocuments(Arrays.asList("I love to do the laundry with tide.", "tide", "high", "detergent", "The tide was high when he was at the beach"));
+        req.setRequestId("testing-services-match-" + (new Random()).nextInt(1000));
+        req.setExpression(Collections.singletonList(new Sense(0, 1, "tide", "Tide/N8")));
 
-          CompletableFuture<MatchingEvalResponse> future = client.matchingEvalAsync(req);
-          future.whenComplete((response, ex) -> {
-            try {
-              if (ex != null) {
-                logger_.error("encountered exception", ex);
-                failed.set(true);
-              } else  {
-                failed.set(failed.get() || 
-                    response.getResult() == null || 
-                    response.getResult().size() != 5 || 
-                    response.getResult().get(0) <= 0 || 
-                    response.getResult().get(1) != 0 || 
-                    response.getResult().get(2) >= 0 || 
-                    response.getResult().get(3) >= 0 || 
-                    response.getResult().get(4) >= 0 );
-              }
-            } catch (Exception e) {
-              logger_.error("Caught exception", e);
-              Assert.assertTrue(false);
-              failed.set(true);
-            } finally {
-              counter.countDown();
-            }
-          });
-        }
-        counter.await();
-        Assert.assertFalse(failed.get());
+        MatchingEvalResponse response = client.matchingEvalAsync(req).join();
+        Assert.assertNotNull(response.getResult());
+        Assert.assertEquals(5, response.getResult().size());
+        Assert.assertTrue(response.getResult().get(0) > 0);
+        Assert.assertTrue(response.getResult().get(1) == 0);
+        Assert.assertTrue(response.getResult().get(2) < 0);
+        Assert.assertTrue(response.getResult().get(3) < 0);
+        Assert.assertTrue(response.getResult().get(4) < 0);
       }
 
       {
-        final CountDownLatch counter = new CountDownLatch(numReqs);
-        for (int i = 0; i < numReqs; ++i) {
-          MatchingEvalRequest req = new MatchingEvalRequest();
-          req.setDocuments(Arrays.asList("I love to do the laundry with tide.", "tide", "high", "detergent", "The tide was high when he was at the beach"));
-          req.setRequestId("testing-services-match-" + (new Random()).nextInt(1000));
-          req.setExpression(Collections.singletonList(new Sense(0, 1, "tide", "Tide/N8")));
-          req.setRequireTerm(MatchingEvalRequest.RequireTerm.no);
+        MatchingEvalRequest req = new MatchingEvalRequest();
+        req.setDocuments(Arrays.asList("I love to do the laundry with tide.", "tide", "high", "detergent", "The tide was high when he was at the beach"));
+        req.setRequestId("testing-services-match-" + (new Random()).nextInt(1000));
+        req.setExpression(Collections.singletonList(new Sense(0, 1, "tide", "Tide/N8")));
+        req.setRequireTerm(MatchingEvalRequest.RequireTerm.no);
         
-          CompletableFuture<MatchingEvalResponse> future = client.matchingEvalAsync(req);
-          future.whenComplete((response, ex) -> {
-            try {
-              if (ex != null) {
-                logger_.error("encountered exception", ex);
-                failed.set(true);
-              } else  {
-                failed.set(failed.get() || 
-                    response.getResult() == null || 
-                    response.getResult().size() != 5 || 
-                    response.getResult().get(0) <= 0 || 
-                    response.getResult().get(1) != 0 || 
-                    response.getResult().get(2) >= 0 || 
-                    response.getResult().get(3) <= 0 || 
-                    response.getResult().get(4) >= 0 );
-              }
-            } catch (Exception e) {
-              logger_.error("Caught exception", e);
-              Assert.assertTrue(false);
-              failed.set(true);
-            } finally {
-              counter.countDown();
-            }
-          });
-        }
-        counter.await();
-        Assert.assertFalse(failed.get());
+        MatchingEvalResponse response = client.matchingEvalAsync(req).join();
+        Assert.assertNotNull(response.getResult());
+        Assert.assertEquals(5, response.getResult().size());
+        Assert.assertTrue(response.getResult().get(0) > 0);
+        Assert.assertTrue(response.getResult().get(1) == 0);
+        Assert.assertTrue(response.getResult().get(2) < 0);
+        Assert.assertTrue(response.getResult().get(3) > 0);
+        Assert.assertTrue(response.getResult().get(4) < 0);
       }
-
     } finally {
     }
   }
 
   @Test
-  public void testParaphrase() throws InterruptedException {
+  public void testParaphrase() throws InterruptedException, IOException {
     // Perform a REST request to the paraphrase server
     try (AsyncClient client = new AsyncClient(getDefaultCreds(), Configuration.INSTANCE.getParaphraseApiUrl())) {
-      final AtomicBoolean failed = new AtomicBoolean(false);
-      final int numReqs = 10;
+      ParaphraseRequest req = new ParaphraseRequest();
+      req.setText("my testing query", "text/query", StandardCharsets.UTF_8);
+      req.setRequestId("testing-services-para-" + (new Random()).nextInt(1000));
+      req.setWsdMime("application/x-semdoc+xml");
 
-      final CountDownLatch counter = new CountDownLatch(numReqs);
-      for (int i = 0; i < numReqs; ++i) {
-        ParaphraseRequest req = new ParaphraseRequest();
-        req.setText("my testing query", "text/query", StandardCharsets.UTF_8);
-        req.setRequestId("testing-services-para-" + (new Random()).nextInt(1000));
-        req.setWsdMime("application/x-semdoc+xml");
-  
-        CompletableFuture<ParaphraseResponse> future = client.paraphraseAsync(req);
-        future.whenComplete((response, ex) -> {
-          try {
-            if (ex != null) {
-              logger_.error("encountered exception", ex);
-              failed.set(true);
-          } else {
-              failed.set(failed.get() || response.getParaphrases().size() <= 1);
-              
-              InputStream is = response.getWsdResult().getInputStream();
-              Scanner scanner = new Scanner(is);
-              String theResult = scanner.useDelimiter("\\A").next();
-              scanner.close();
-              failed.set(failed.get() || theResult.indexOf("query/N1") <= 0);
-            }
-          } catch (Exception e) {
-            logger_.error("Caught exception", e);
-            Assert.assertTrue(false);
-            failed.set(true);
-          } finally {
-            counter.countDown();
-          }
-        });
-      }
-      
-      counter.await();
-      Assert.assertFalse(failed.get());
-
+      ParaphraseResponse response = client.paraphraseAsync(req).join();
+      Assert.assertFalse(response.getParaphrases().size() <= 1);
+      InputStream is = response.getWsdResult().getInputStream();
+      Scanner scanner = new Scanner(is);
+      String theResult = scanner.useDelimiter("\\A").next();
+      scanner.close();
+      Assert.assertTrue(theResult.indexOf("query/N1") >= 0);
     } finally {
     }
   }
   
   
   @Test
-  public void testDisambiguate() throws InterruptedException {
+  public void testDisambiguate() {
     // Perform a REST request to the documentation server
     try (AsyncClient client = new AsyncClient(getDefaultCreds(), Configuration.INSTANCE.getDisambiguateApiUrl())) {
-      final AtomicBoolean failed = new AtomicBoolean(false);
-      final int numReqs = 10;
 
-      final CountDownLatch counter = new CountDownLatch(numReqs);
-      for (int i = 0; i < numReqs; ++i) {
-        DisambiguateRequest req = new DisambiguateRequest();
-        req.setText("my testing query", "text/query", StandardCharsets.UTF_8);
-        req.setRequestId("testing-services-doc-" + (new Random()).nextInt(1000));
-        req.setMaxTokens(200);
-  
-        CompletableFuture<DisambiguateResponse> future = client.disambiguateAsync(req);
-        future.whenComplete((response, ex) -> {
-          try {
-            if (ex != null) {
-              logger_.error("encountered exception", ex);
-              failed.set(true);
-            } else {
-              InputStream is = response.getResult().getInputStream();
-              Scanner scanner = new Scanner(is);
-              String theResult = scanner.useDelimiter("\\A").next();
-              scanner.close();
-              failed.set(failed.get() || theResult.indexOf("query/N1") <= 0);
-            }
-          } catch (Exception e) {
-            logger_.error("Caught exception", e);
-            Assert.assertTrue(false);
-            failed.set(true);
-          } finally {
-            counter.countDown();
-          }
-        });
-      }
-      counter.await();
-      Assert.assertFalse(failed.get());
-      
+      DisambiguateRequest req = new DisambiguateRequest();
+      req.setText("my testing query", "text/query", StandardCharsets.UTF_8);
+      DisambiguateResponse r = client.disambiguateAsync(req).join();
+      Assert.assertEquals(HttpStatus.SC_OK, r.getStatus());
     } finally {
     }
   }

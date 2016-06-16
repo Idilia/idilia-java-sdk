@@ -14,13 +14,13 @@
 package com.idilia.services.text;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 
 import javax.mail.MessagingException;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.HttpClientContext;
 
@@ -90,11 +90,11 @@ public class AsyncClient extends AsyncClientBase
     
     final CompletableFuture<DisambiguateResponse> future = new CompletableFuture<>();
     
-    getClient().execute(httpPost, ctxt, new HttpCallback<DisambiguateResponse>(future) {
+    getClient().execute(httpPost, ctxt, new HttpCallback<DisambiguateResponse>(httpPost, ctxt, future) {
       @Override
       public DisambiguateResponse completedHdlr(HttpResponse result) throws IdiliaClientException, JsonParseException, UnsupportedOperationException, IOException, MessagingException {
         DisambiguateResponse resp = DisambiguateCodec.decode(jsonMapper_, result.getEntity());
-        if (resp.getStatus() != HttpURLConnection.HTTP_OK && resp.getStatus() != HttpURLConnection.HTTP_ACCEPTED)
+        if (resp.getStatus() != HttpStatus.SC_OK && resp.getStatus() != HttpStatus.SC_ACCEPTED)
           throw new IdiliaClientException(resp);
         return resp;
       }
@@ -124,11 +124,11 @@ public class AsyncClient extends AsyncClientBase
     
     final CompletableFuture<ParaphraseResponse> future = new CompletableFuture<>();
     getClient().execute(httpPost, ctxt, 
-        new HttpCallback<ParaphraseResponse>(future) {
+        new HttpCallback<ParaphraseResponse>(httpPost, ctxt, future) {
       @Override
       public ParaphraseResponse completedHdlr(HttpResponse result) throws IdiliaClientException, JsonParseException, JsonProcessingException, IOException, MessagingException {
         ParaphraseResponse resp = ParaphraseCodec.decode(jsonMapper_, result.getEntity());
-        if (resp.getStatus() != HttpURLConnection.HTTP_OK && resp.getStatus() != HttpURLConnection.HTTP_ACCEPTED)
+        if (resp.getStatus() != HttpStatus.SC_OK && resp.getStatus() != HttpStatus.SC_ACCEPTED)
           throw new IdiliaClientException(resp);
         return resp;
       }
@@ -149,7 +149,7 @@ public class AsyncClient extends AsyncClientBase
    */
   public CompletableFuture<MatchResponse> matchAsync(final MatchRequest req) throws IdiliaClientException {
    
-    final HttpPost httppost = createPost(req);
+    final HttpPost httpPost = createPost(req);
     final HttpClientContext ctxt = HttpClientContext.create();
     try {
       sign(ctxt, req.requestPath(), req.toSign());
@@ -158,11 +158,11 @@ public class AsyncClient extends AsyncClientBase
     }
     
     final CompletableFuture<MatchResponse> future = new CompletableFuture<>();
-    getClient().execute(httppost, ctxt, new HttpCallback<MatchResponse>(future) {
+    getClient().execute(httpPost, ctxt, new HttpCallback<MatchResponse>(httpPost, ctxt, future) {
       @Override
       public MatchResponse completedHdlr(HttpResponse result) throws IdiliaClientException, JsonParseException, UnsupportedOperationException, IOException {
         MatchResponse resp = MatchCodec.decodeMatchResponse(jsonMapper_, result.getEntity());
-        if (resp.getStatus() != HttpURLConnection.HTTP_OK && resp.getStatus() != HttpURLConnection.HTTP_ACCEPTED)
+        if (resp.getStatus() != HttpStatus.SC_OK && resp.getStatus() != HttpStatus.SC_ACCEPTED)
           throw new IdiliaClientException(resp);
         return resp;
       }
@@ -183,7 +183,7 @@ public class AsyncClient extends AsyncClientBase
    */
   public CompletableFuture<MatchingEvalResponse> matchingEvalAsync(final MatchingEvalRequest req) throws IdiliaClientException {
     // Sign the request and transmit it
-    final HttpPost httppost = createPost(req);
+    final HttpPost httpPost = createPost(req);
     final HttpClientContext ctxt = HttpClientContext.create();
     try {
       sign(ctxt, req.requestPath(), req.toSign());
@@ -192,12 +192,12 @@ public class AsyncClient extends AsyncClientBase
     }
     
     final CompletableFuture<MatchingEvalResponse> future = new CompletableFuture<>();
-    getClient().execute(httppost, ctxt, 
-        new HttpCallback<MatchingEvalResponse>(future) {
+    getClient().execute(httpPost, ctxt, 
+        new HttpCallback<MatchingEvalResponse>(httpPost, ctxt, future) {
       @Override
       public MatchingEvalResponse completedHdlr(HttpResponse result) throws IdiliaClientException, JsonParseException, UnsupportedOperationException, IOException {
         MatchingEvalResponse resp = MatchingEvalCodec.decode(jsonMapper_, result.getEntity());
-        if (resp.getStatus() != HttpURLConnection.HTTP_OK)
+        if (resp.getStatus() != HttpStatus.SC_OK)
           throw new IdiliaClientException(resp);
         return resp;
       }

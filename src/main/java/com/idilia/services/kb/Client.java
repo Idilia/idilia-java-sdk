@@ -14,11 +14,11 @@
 package com.idilia.services.kb;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 
 import com.idilia.services.base.IdiliaClientException;
@@ -92,7 +92,7 @@ public class Client extends SyncClientBase {
     
       // Recover the response.
       QueryResponse<T> resp = QueryCodec.decode(jsonMapper_, tpRef, httpResponse.getEntity());
-      if (resp.getStatus() != HttpURLConnection.HTTP_OK)
+      if (resp.getStatus() != HttpStatus.SC_OK)
         throw new IdiliaClientException(resp);
       return resp;
   	} catch (IOException e) {
@@ -121,7 +121,7 @@ public class Client extends SyncClientBase {
         throw new IdiliaClientException("Unexpected content type: " + ct);
   
       SenseMenuResponse resp = jsonMapper_.readValue(rxEntity.getContent(), SenseMenuResponse.class);
-      if (resp.getStatus() != HttpURLConnection.HTTP_OK)
+      if (resp.getStatus() != HttpStatus.SC_OK)
         throw new IdiliaClientException(resp);
       return resp;
     } catch (IOException e) {
@@ -150,7 +150,7 @@ public class Client extends SyncClientBase {
         throw new IdiliaClientException("Unexpected content type: " + ct);
   
       TaggingMenuResponse resp = jsonMapper_.readValue(rxEntity.getContent(), TaggingMenuResponse.class);
-      if (resp.getStatus() != HttpURLConnection.HTTP_OK)
+      if (resp.getStatus() != HttpStatus.SC_OK)
         throw new IdiliaClientException(resp);
       return resp;
     } catch (IOException e) {
@@ -180,7 +180,7 @@ public class Client extends SyncClientBase {
         throw new IdiliaClientException("Unexpected content type: " + ct);
   
       SenseCardResponse resp = jsonMapper_.readValue(rxEntity.getContent(), SenseCardResponse.class);
-      if (resp.getStatus() != HttpURLConnection.HTTP_OK)
+      if (resp.getStatus() != HttpStatus.SC_OK)
         throw new IdiliaClientException(resp);
       
       return resp;
