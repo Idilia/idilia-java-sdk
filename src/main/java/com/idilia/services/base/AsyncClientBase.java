@@ -132,12 +132,11 @@ public class AsyncClientBase extends ClientBase implements Closeable {
             (result.getStatusLine().getStatusCode() >= 500)) {
           int r = retryHandler.retryRequest(null, ++retryCnt_, context_);
           if (r >= 0) {
-            if (r == 0)
-              getClient().execute(request_, context_, this);
-            else
-              executor.schedule(
-                  () -> { getClient().execute(request_, context_, this); },
-                  r, TimeUnit.SECONDS);
+            /* Ensure that a minimum wait to prevent a race condition with out of order response */
+            long waitMs = r == 0 ? 200 : r * 1000;
+            executor.schedule(
+                () -> { getClient().execute(request_, context_, this); },
+                waitMs, TimeUnit.MILLISECONDS);
             return;
           }
         }
