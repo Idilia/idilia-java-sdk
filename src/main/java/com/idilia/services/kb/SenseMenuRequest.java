@@ -8,6 +8,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
 import com.idilia.services.base.IdiliaClientException;
+import com.idilia.services.base.ResponseBase;
 
 /**
  * Request message to obtain a sense menu for a single word or a multi-word expression known
@@ -62,11 +63,14 @@ public class SenseMenuRequest extends MenuRequest {
     return this;
   }
   
- @Override
+  @Override
   final public String requestPath() {
     return new String("/1/kb/sense_menu.json");
   }
   
+  @Override
+  public Class<? extends ResponseBase> responseClass() { return SenseMenuResponse.class; }
+
   @Override
   protected void getHttpQueryParms(List<NameValuePair> parms) throws IdiliaClientException {
     if (text == null || text.isEmpty())

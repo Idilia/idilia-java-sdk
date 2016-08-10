@@ -16,8 +16,6 @@ package com.idilia.services.kb;
 import java.io.IOException;
 import java.net.URL;
 
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 
@@ -108,25 +106,7 @@ public class Client extends SyncClientBase {
    * @throws IdiliaClientException on any error encountered
    */
   public SenseMenuResponse senseMenu(SenseMenuRequest req) throws IdiliaClientException {
-    try (CloseableHttpResponse httpResponse = getServerResponse(req)) {
-    
-      // Recover the response.
-      HttpEntity rxEntity = httpResponse.getEntity();
-      Header ctHdr = rxEntity.getContentType();
-      if (ctHdr == null)
-        throw new IdiliaClientException("Unexpected no content type");
-      
-      String ct = ctHdr.getValue();
-      if (!ct.startsWith("application/json"))
-        throw new IdiliaClientException("Unexpected content type: " + ct);
-  
-      SenseMenuResponse resp = jsonMapper_.readValue(rxEntity.getContent(), SenseMenuResponse.class);
-      if (resp.getStatus() != HttpStatus.SC_OK)
-        throw new IdiliaClientException(resp);
-      return resp;
-    } catch (IOException e) {
-      throw new IdiliaClientException(e);
-    }
+      return (SenseMenuResponse)perform(req);
   }
   
   
@@ -137,25 +117,7 @@ public class Client extends SyncClientBase {
    * @throws IdiliaClientException on any error encountered
    */
   public TaggingMenuResponse taggingMenu(TaggingMenuRequest req) throws IdiliaClientException {
-    try (CloseableHttpResponse httpResponse = getServerResponse(req)) {
-    
-      // Recover the response.
-      HttpEntity rxEntity = httpResponse.getEntity();
-      Header ctHdr = rxEntity.getContentType();
-      if (ctHdr == null)
-        throw new IdiliaClientException("Unexpected no content type");
-      
-      String ct = ctHdr.getValue();
-      if (!ct.startsWith("application/json"))
-        throw new IdiliaClientException("Unexpected content type: " + ct);
-  
-      TaggingMenuResponse resp = jsonMapper_.readValue(rxEntity.getContent(), TaggingMenuResponse.class);
-      if (resp.getStatus() != HttpStatus.SC_OK)
-        throw new IdiliaClientException(resp);
-      return resp;
-    } catch (IOException e) {
-      throw new IdiliaClientException(e);
-    }
+      return (TaggingMenuResponse)perform(req);
   }
   
   
@@ -166,27 +128,7 @@ public class Client extends SyncClientBase {
    * @throws IdiliaClientException when the request is not successful for any reason
    */
   public SenseCardResponse senseCard(SenseCardRequest req) throws IdiliaClientException {
-    
-    try (CloseableHttpResponse httpResponse = getServerResponse(req)) {
-      
-      // Recover the response.
-      HttpEntity rxEntity = httpResponse.getEntity();
-      Header ctHdr = rxEntity.getContentType();
-      if (ctHdr == null)
-        throw new IdiliaClientException("Unexpected no content type");
-      
-      String ct = ctHdr.getValue();
-      if (!ct.startsWith("application/json"))
-        throw new IdiliaClientException("Unexpected content type: " + ct);
-  
-      SenseCardResponse resp = jsonMapper_.readValue(rxEntity.getContent(), SenseCardResponse.class);
-      if (resp.getStatus() != HttpStatus.SC_OK)
-        throw new IdiliaClientException(resp);
-      
-      return resp;
-    } catch (IOException e) {
-      throw new IdiliaClientException(e);
-    }
+    return (SenseCardResponse)perform(req);
   }
     
 }

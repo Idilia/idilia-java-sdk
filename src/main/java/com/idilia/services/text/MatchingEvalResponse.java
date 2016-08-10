@@ -82,21 +82,6 @@ public class MatchingEvalResponse extends ResponseBase {
 
   private List<SkModelStatus> skModelStatuses;
 
-  
-  /**
-   * Creates an empty object. Normally not used by application code.
-   */
-  MatchingEvalResponse() {
-  }
-
-  /**
-   * Creates an object with an error condition. Normally not used by application
-   * code.
-   */
-  MatchingEvalResponse(int status, String errorMsg) {
-    super(status, errorMsg);
-  }
-
   /**
    * Obtain the result computed by the server for each document. The list is
    * ordered in the same order as the documents provided in

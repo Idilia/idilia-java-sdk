@@ -17,6 +17,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ConnectionKeepAliveStrategy;
 import org.apache.http.entity.ByteArrayEntity;
@@ -24,6 +25,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ClientBase {
@@ -134,6 +136,37 @@ public class ClientBase {
     }
   };
 
+  protected ResponseBase decodeHttpResponse(HttpResponse httpResponse, RequestBase req) throws IdiliaClientException
+  {
+    // Recover the response. It can be a single part or multipart
+    HttpEntity rxEntity = httpResponse.getEntity();
+
+    if (rxEntity == null)
+      throw new IdiliaClientException("Did not received a response from the server");
+    
+    Header ctHdr = rxEntity.getContentType();
+    if (ctHdr == null)
+      throw new IdiliaClientException("Unexpected no content type");
+    
+    String ct = ctHdr.getValue();
+    ResponseBase resp;
+    if (ct.startsWith("application/json"))
+    {
+      // Single part json message.
+      try {
+        JsonParser jp = jsonMapper_.getFactory().createParser(rxEntity.getContent());
+        resp = jp.readValueAs(req.responseClass());
+        if (resp.getStatus() != HttpStatus.SC_OK)
+          throw new IdiliaClientException(resp);
+        return resp;
+      }
+      catch (IOException e) {
+        throw new IdiliaClientException(e);
+      }
+    } else {
+      throw new IdiliaClientException("Unexpected content type: " + ct);
+    }
+  }
   
   final protected IdiliaCredentials credentials;
   final protected URL serviceUrl;

@@ -18,6 +18,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.idilia.services.base.IdiliaClientException;
+import com.idilia.services.base.ResponseBase;
 import com.idilia.services.text.DisambiguatedDocument;
 
 /**
@@ -89,6 +90,9 @@ public class TaggingMenuRequest extends MenuRequest {
     return new String("/1/kb/tagging_menu.json");
   }
   
+  @Override
+  public Class<? extends ResponseBase> responseClass() { return TaggingMenuResponse.class; }
+
   @Override
   protected void getHttpQueryParms(List<NameValuePair> parms) throws IdiliaClientException {
     if (tf == null)

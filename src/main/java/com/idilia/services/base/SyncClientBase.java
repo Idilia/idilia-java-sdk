@@ -119,7 +119,23 @@ public class SyncClientBase extends ClientBase implements Closeable {
     }
   }
   
-  
+  /**
+   * Function to be called by users to perform an API request.
+   * 
+   * @param req request object which will be sent to the server
+   * @return ResponseBase to be cast in the response the request expects
+   * @throws IdiliaClientException on any error encountered
+   */
+  public ResponseBase perform(RequestBase req) throws IdiliaClientException {
+    
+    try (CloseableHttpResponse httpResponse = getServerResponse(req)) {
+      return decodeHttpResponse(httpResponse, req);
+    }
+    catch (IOException e) {
+      throw new IdiliaClientException(e);
+    } 
+  }
+
 
   @Override
   public void close() {

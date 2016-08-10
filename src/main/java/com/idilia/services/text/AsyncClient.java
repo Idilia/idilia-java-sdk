@@ -161,7 +161,7 @@ public class AsyncClient extends AsyncClientBase
     getClient().execute(httpPost, ctxt, new HttpCallback<MatchResponse>(httpPost, ctxt, future) {
       @Override
       public MatchResponse completedHdlr(HttpResponse result) throws IdiliaClientException, JsonParseException, UnsupportedOperationException, IOException {
-        MatchResponse resp = MatchCodec.decodeMatchResponse(jsonMapper_, result.getEntity());
+        MatchResponse resp = (MatchResponse)decodeHttpResponse(result, req);
         if (resp.getStatus() != HttpStatus.SC_OK && resp.getStatus() != HttpStatus.SC_ACCEPTED)
           throw new IdiliaClientException(resp);
         return resp;
@@ -196,7 +196,7 @@ public class AsyncClient extends AsyncClientBase
         new HttpCallback<MatchingEvalResponse>(httpPost, ctxt, future) {
       @Override
       public MatchingEvalResponse completedHdlr(HttpResponse result) throws IdiliaClientException, JsonParseException, UnsupportedOperationException, IOException {
-        MatchingEvalResponse resp = MatchingEvalCodec.decode(jsonMapper_, result.getEntity());
+        MatchingEvalResponse resp = (MatchingEvalResponse)decodeHttpResponse(result, req);
         if (resp.getStatus() != HttpStatus.SC_OK)
           throw new IdiliaClientException(resp);
         return resp;

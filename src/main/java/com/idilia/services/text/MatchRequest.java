@@ -25,6 +25,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.idilia.services.base.IdiliaClientException;
 import com.idilia.services.base.RequestBase;
+import com.idilia.services.base.ResponseBase;
 
 /**
  * Message for performing semantic matching.
@@ -208,6 +209,9 @@ public class MatchRequest extends RequestBase {
   final public String requestPath() {
     return "/1/text/match.json";
   }
+  
+  @Override
+  public Class<? extends ResponseBase> responseClass() { return MatchResponse.class; }
     
   @Override
   protected void getHttpQueryParms(List<NameValuePair> parms) throws IllegalStateException {

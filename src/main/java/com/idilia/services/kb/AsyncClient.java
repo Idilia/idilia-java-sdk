@@ -5,7 +5,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 
-import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -123,15 +122,7 @@ public class AsyncClient extends AsyncClientBase {
     getClient().execute(httpPost, ctxt, new HttpCallback<SenseMenuResponse>(httpPost, ctxt, future) {
       @Override
       public SenseMenuResponse completedHdlr(HttpResponse result) throws IdiliaClientException, JsonParseException, JsonMappingException, UnsupportedOperationException, IOException {
-        Header ctHdr = result.getEntity().getContentType();
-        if (ctHdr == null)
-          throw new IdiliaClientException("Unexpected no content type");
-        
-        String ct = ctHdr.getValue();
-        if (!ct.startsWith("application/json"))
-          throw new IdiliaClientException("Unexpected content type: " + ct);
-          
-        SenseMenuResponse resp = jsonMapper_.readValue(result.getEntity().getContent(), SenseMenuResponse.class);
+        SenseMenuResponse resp = (SenseMenuResponse)decodeHttpResponse(result, req);
         if (resp.getStatus() != HttpURLConnection.HTTP_OK)
           throw new IdiliaClientException(resp);
         return resp;
@@ -166,15 +157,7 @@ public class AsyncClient extends AsyncClientBase {
     getClient().execute(httpPost, ctxt, new HttpCallback<TaggingMenuResponse>(httpPost, ctxt, future) {
       @Override
       public TaggingMenuResponse completedHdlr(HttpResponse result) throws IdiliaClientException, JsonParseException, JsonMappingException, UnsupportedOperationException, IOException {
-        Header ctHdr = result.getEntity().getContentType();
-        if (ctHdr == null)
-          throw new IdiliaClientException("Unexpected no content type");
-        
-        String ct = ctHdr.getValue();
-        if (!ct.startsWith("application/json"))
-          throw new IdiliaClientException("Unexpected content type: " + ct);
-        
-        TaggingMenuResponse resp = jsonMapper_.readValue(result.getEntity().getContent(), TaggingMenuResponse.class);
+        TaggingMenuResponse resp = (TaggingMenuResponse)decodeHttpResponse(result, req);
         if (resp.getStatus() != HttpURLConnection.HTTP_OK)
           throw new IdiliaClientException(resp);
         return resp;
@@ -209,15 +192,7 @@ public class AsyncClient extends AsyncClientBase {
     getClient().execute(httpPost, ctxt, new HttpCallback<SenseCardResponse>(httpPost, ctxt, future) {
       @Override
       public SenseCardResponse completedHdlr(HttpResponse result) throws IdiliaClientException, JsonParseException, JsonMappingException, UnsupportedOperationException, IOException {
-        Header ctHdr = result.getEntity().getContentType();
-        if (ctHdr == null)
-          throw new IdiliaClientException("Unexpected no content type");
-        
-        String ct = ctHdr.getValue();
-        if (!ct.startsWith("application/json"))
-          throw new IdiliaClientException("Unexpected content type: " + ct);
-          
-        SenseCardResponse resp = jsonMapper_.readValue(result.getEntity().getContent(), SenseCardResponse.class);
+        SenseCardResponse resp = (SenseCardResponse)decodeHttpResponse(result, req);
         if (resp.getStatus() != HttpURLConnection.HTTP_OK)
           throw new IdiliaClientException(resp);
         return resp;

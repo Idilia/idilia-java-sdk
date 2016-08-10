@@ -6,10 +6,12 @@ import java.util.List;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.idilia.services.base.IdiliaClientException;
 import com.idilia.services.base.RequestBase;
+import com.idilia.services.base.ResponseBase;
 import com.idilia.tagging.Sense;
 
 /**
@@ -47,9 +49,48 @@ public class MatchingEvalRequest extends RequestBase {
     }
   }
   
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  static public class SkModelOverride {
+    /**
+     * Return the offset of the sensekey in the expression that is overridden
+     * <p>
+     * @return offset of the override
+     */
+    public final Integer getOffset() {
+      return offset;
+    }
+    
+    /**
+     * Return the override value of the offset.
+     * <p>
+     * @return text fragment of the search expression.
+     */
+    public final Boolean getUse() {
+      return use;
+    }
+
+    public Integer offset;
+    public Boolean use;
+  }
+  
+  /**
+   * Set sk model overrides
+   * 
+   * @param skModelOverrides list of SkModelOverride to be applied to the request
+   */
+  
+  public void setSkModelOverrides(List<SkModelOverride> skModelOverrides) {
+    if (skModelOverrides != null)
+      try {
+        this.skModelOverrides = jsonMapper.writeValueAsString(skModelOverrides);
+      } catch (JsonProcessingException e) {
+        throw new IdiliaClientException(e);
+      }
+ }
+  
   /**
    * Specify matching behavior when the search term is not present in the provided document.
-   * @param val
+   * @param val RequireTerm option to be used while matching
    */
   public void setRequireTerm(RequireTerm val) {
     this.requireTerm = val;
@@ -78,7 +119,10 @@ public class MatchingEvalRequest extends RequestBase {
   public String requestPath() {
     return "/1/text/matching/eval.json";
   }
-
+  
+  @Override
+  public Class<? extends ResponseBase> responseClass() { return MatchingEvalResponse.class; }
+  
   @Override
   protected void getHttpQueryParms(List<NameValuePair> parms) throws IdiliaClientException {
     super.getHttpQueryParms(parms);
@@ -86,10 +130,13 @@ public class MatchingEvalRequest extends RequestBase {
     if (requireTerm != null)
       parms.add(new BasicNameValuePair("requireTerm", requireTerm.toString()));
     parms.add(new BasicNameValuePair("documents", documents));
+    if (skModelOverrides != null)
+      parms.add(new BasicNameValuePair("skModelOverrides", skModelOverrides));
   }
   
   private String expression;
   private RequireTerm requireTerm;
   private String documents;
+  private String skModelOverrides;
   static private final ObjectMapper jsonMapper = new ObjectMapper();
 }

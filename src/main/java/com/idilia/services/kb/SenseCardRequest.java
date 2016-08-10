@@ -9,6 +9,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 import com.idilia.services.base.IdiliaClientException;
 import com.idilia.services.base.RequestBase;
+import com.idilia.services.base.ResponseBase;
 
 /**
  * Request message for a sense card
@@ -95,7 +96,10 @@ public class SenseCardRequest extends RequestBase {
   public String requestPath() {
     return new String("/1/kb/sense_card.json");
   }
-  
+
+  @Override
+  public Class<? extends ResponseBase> responseClass() { return SenseCardResponse.class; }
+
   @Override
   public int hashCode() {
     return fsk.hashCode();

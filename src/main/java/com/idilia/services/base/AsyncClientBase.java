@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.concurrent.FutureCallback;
@@ -27,6 +28,8 @@ import org.apache.http.impl.nio.client.HttpAsyncClients;
 import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
 import org.apache.http.impl.nio.reactor.DefaultConnectingIOReactor;
 import org.apache.http.nio.reactor.IOReactorException;
+
+import com.fasterxml.jackson.core.JsonParseException;
 
 public class AsyncClientBase extends ClientBase implements Closeable {
 
@@ -103,7 +106,7 @@ public class AsyncClientBase extends ClientBase implements Closeable {
      * Create a callback with retry capability.
      * An condition for using this is that the entity in the request can be sent again.
      */
-    public HttpCallback(HttpUriRequest request, HttpClientContext context, CompletableFuture<Response> future) {
+    protected HttpCallback(HttpUriRequest request, HttpClientContext context, CompletableFuture<Response> future) {
       request_ = request;
       context_ = context;
       future_ = future;
@@ -122,7 +125,7 @@ public class AsyncClientBase extends ClientBase implements Closeable {
      */
     abstract public Response completedHdlr(HttpResponse result) throws IdiliaClientException, Exception;
 
-    
+
     @Override
     public void completed(HttpResponse result) {
       try {
@@ -171,7 +174,30 @@ public class AsyncClientBase extends ClientBase implements Closeable {
       future_.cancel(false);
     }
   }
+
+  public CompletableFuture<ResponseBase> perform(RequestBase req) throws IdiliaClientException {
+    // Sign the request and transmit it
+    final HttpPost httpPost = createPost(req);
+    final HttpClientContext ctxt = HttpClientContext.create();
+    try {
+      sign(ctxt, req.requestPath(), req.toSign());
+    } catch (IOException e) {
+      throw new IdiliaClientException(e);
+    }
+    
+    final CompletableFuture<ResponseBase> future = new CompletableFuture<>();
+    getClient().execute(httpPost, ctxt, 
+        new HttpCallback<ResponseBase>(httpPost, ctxt, future) {
+      @Override
+      public ResponseBase completedHdlr(HttpResponse result) throws IdiliaClientException, JsonParseException, UnsupportedOperationException, IOException {
+        return decodeHttpResponse(result, req);
+      }
+      });
+    return future;
+  }
+
   
+
   @Override
   public void close() {
     /* We're not really closable because we use a static CloseableHttpAsyncClient. */

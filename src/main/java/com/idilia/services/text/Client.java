@@ -143,18 +143,7 @@ public class Client extends SyncClientBase
    * @throws IdiliaClientException when the request is not successful for any reason
    */
   public MatchResponse match(MatchRequest req) throws IdiliaClientException {
-    
-    try (CloseableHttpResponse httpResponse = getServerResponse(req)) {
-
-      // Recover the response. It can be a single part or multipart
-      HttpEntity rxEntity = httpResponse.getEntity();
-      MatchResponse resp = MatchCodec.decodeMatchResponse(jsonMapper_, rxEntity);
-      if (resp.getStatus() != HttpStatus.SC_OK && resp.getStatus() != HttpStatus.SC_ACCEPTED)
-        throw new IdiliaClientException(resp);
-      return resp;
-    } catch (IOException | UnsupportedOperationException e) {
-      throw new IdiliaClientException(e);
-    }
+    return (MatchResponse)perform(req);
   }
   
   
@@ -170,18 +159,6 @@ public class Client extends SyncClientBase
    * @throws IdiliaClientException when the request is not successful for any reason
    */
   public MatchingEvalResponse matchingEval(MatchingEvalRequest req) throws IdiliaClientException {
-    
-    try (CloseableHttpResponse httpResponse = getServerResponse(req)) {
-
-      // Recover the response. It can be a single part or multipart
-      HttpEntity rxEntity = httpResponse.getEntity();
-      MatchingEvalResponse resp = MatchingEvalCodec.decode(jsonMapper_, rxEntity);
-      if (resp.getStatus() != HttpStatus.SC_OK)
-        throw new IdiliaClientException(resp);
-      return resp;
-    } catch (IOException | UnsupportedOperationException e) {
-      throw new IdiliaClientException(e);
-    }
+    return (MatchingEvalResponse)perform(req);
   }
-
  }

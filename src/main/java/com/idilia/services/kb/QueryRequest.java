@@ -120,7 +120,6 @@ public class QueryRequest extends RequestBase {
     return new String("/1/kb/query.json");
   }
   
-  
   @Override
   protected void getHttpQueryParms(List<NameValuePair> parms) throws IdiliaClientException {
     

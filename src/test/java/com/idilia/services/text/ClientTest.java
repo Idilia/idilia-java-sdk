@@ -1,6 +1,7 @@
 package com.idilia.services.text;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -9,12 +10,13 @@ import org.junit.Test;
 
 import com.idilia.services.base.Configuration;
 import com.idilia.services.base.TestBase;
+import com.idilia.tagging.Sense;
 
 public class ClientTest extends TestBase {
 
   @Test
   public void testMatch() {
-    // Perform a REST request to the paraphrase server
+    // Perform a REST request to the match server
     try (Client client = new Client(getDefaultCreds(), Configuration.INSTANCE.getMatchApiUrl())) {
       MatchRequest req = new MatchRequest();
       req.setText("I like my Tide detergent!", "text/tweet", StandardCharsets.UTF_8);
@@ -25,6 +27,25 @@ public class ClientTest extends TestBase {
       MatchResponse response = client.match(req);
       Assert.assertTrue(response.getErrorMsg() == null);
       Assert.assertTrue(response.result.match == true);
+    } catch (Exception e) {
+      logger_.error("Got unexpected exception when running test", e);
+    }
+  }
+
+  @Test
+  public void testMatchingEval() {
+    // Perform a REST request to the match server
+    try (Client client = new Client(getDefaultCreds(), Configuration.INSTANCE.getMatchApiUrl())) {
+      MatchingEvalRequest req = new MatchingEvalRequest();
+      //req.setText("I like my Tide detergent!", "text/tweet", StandardCharsets.UTF_8);
+      req.setDocuments(Arrays.asList("apple iphone", "apple pie"));
+      req.setRequestId("testing-services-matching-eval-" + (new Random()).nextInt(1000));
+      req.setExpression(Arrays.asList(new Sense(0, 1, "apple", "Apple/N8")));
+
+      MatchingEvalResponse response = client.matchingEval(req);
+      Assert.assertTrue(response.getErrorMsg() == null);
+      Assert.assertTrue(response.getResult().get(0) == 1);
+      Assert.assertTrue(response.getResult().get(1) == -1);
     } catch (Exception e) {
       logger_.error("Got unexpected exception when running test", e);
     }

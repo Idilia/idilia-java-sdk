@@ -95,6 +95,11 @@ public abstract class RequestBase {
    * @return String url for the request
    */
   abstract public String requestPath();
+  
+  /**
+   * @return Class of derived ResponseBase class if implemented
+   */
+  public Class<? extends ResponseBase> responseClass() { return ResponseBase.class; }
 
   private String requestId;
   private UUID customerId;
